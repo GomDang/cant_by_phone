@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cant_by_Phone v0.5.0 - 철도궤도 캔트 측정기</title>
+    <title>Cant_by_Phone v0.5.1 - 철도궤도 캔트 측정기</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -58,7 +58,7 @@
             <i class="fa-solid fa-train-subway text-green-400 text-xl"></i>
             <div>
                 <h1 class="font-extrabold text-base tracking-wide text-white leading-tight">Cant_by_Phone</h1>
-                <p class="text-[16px] text-gray-400 font-semibold">v0.5.0 (궤간 1,435mm)</p>
+                <p class="text-[16px] text-gray-400 font-semibold">v0.5.1 (궤간 1,435mm)</p>
             </div>
         </div>
         <div id="osBadge" class="hidden text-[16px] font-bold px-2.5 py-0.5 rounded bg-gray-800 text-gray-200 border border-gray-600">
@@ -519,10 +519,12 @@
 
         let latestRawPitchRad = 0.0;
 
+        /* Sensor Sign Correction: SmartPhone-side rail high -> Positive (+) */
         function handleOrientationEvent(event) {
             if (state.simulatorActive) return;
             let pitchDeg = event.beta || 0; 
-            latestRawPitchRad = (pitchDeg * Math.PI) / 180.0;
+            // Inverted sign to guarantee smartphone side higher = positive (+)
+            latestRawPitchRad = -(pitchDeg * Math.PI) / 180.0;
         }
 
         function handleMotionEvent(event) {
@@ -531,7 +533,8 @@
                 const ay = event.accelerationIncludingGravity.y || 0;
                 const ax = event.accelerationIncludingGravity.x || 0;
                 const az = event.accelerationIncludingGravity.z || 9.81;
-                const pitchRad = Math.atan2(ay, Math.sqrt(ax * ax + az * az));
+                // Inverted sign for acceleration vector calculation
+                const pitchRad = -Math.atan2(ay, Math.sqrt(ax * ax + az * az));
                 if (!isNaN(pitchRad)) {
                     latestRawPitchRad = pitchRad;
                 }
@@ -606,9 +609,9 @@
             }
 
             const cantVal = parseFloat(state.currentFilteredCant.toFixed(1));
-            if (cantVal > 0) {
+            if (cantVal > 0.05) {
                 sideGuideText.innerHTML = `<i class="fa-solid fa-arrow-up text-amber-400"></i><span class="text-white">이쪽(스마트폰) 레일이 <strong class="text-amber-400 underline">높습니다</strong></span>`;
-            } else if (cantVal < 0) {
+            } else if (cantVal < -0.05) {
                 sideGuideText.innerHTML = `<i class="fa-solid fa-arrow-down text-blue-400"></i><span class="text-white">이쪽(스마트폰) 레일이 <strong class="text-blue-400 underline">낮습니다</strong></span>`;
             } else {
                 sideGuideText.innerHTML = `<i class="fa-solid fa-minus text-green-400"></i><span class="text-gray-300">좌우 레일 높이가 동일합니다 (수평)</span>`;
