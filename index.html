@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cant_by_Phone v0.1.0 - 철도궤도 캔트 측정기</title>
+    <title>Cant_by_Phone v0.2.0 - 철도궤도 캔트 측정기</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -16,9 +16,6 @@
                         railCard: '#1e2026',
                         railBorder: '#2e323d',
                         railOrange: '#ff8c00',
-                    },
-                    fontSize: {
-                        'field-sm': ['13px', '18px'],
                     }
                 }
             }
@@ -27,7 +24,9 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
+        /* Base Minimum Font Size 20px Enforcement */
+        html, body {
+            font-size: 20px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             touch-action: manipulation;
             user-select: none;
@@ -35,338 +34,335 @@
             background-color: #0d0e11;
             color: #e5e7eb;
         }
-        /* Custom scrollbar for dark theme */
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #121316;
         }
         ::-webkit-scrollbar-thumb {
             background: #2e323d;
-            border-radius: 2px;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="h-full flex flex-col justify-between max-w-md mx-auto border-x border-railBorder shadow-2xl text-field-sm">
+<body class="h-full flex flex-col justify-between max-w-lg mx-auto border-x border-railBorder shadow-2xl">
 
     <!-- Top Navigation Bar -->
-    <header class="bg-railCard border-b border-railBorder px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-        <div class="flex items-center space-x-2">
-            <i class="fa-solid fa-train-subway text-railOrange text-lg"></i>
+    <header class="bg-railCard border-b border-railBorder p-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-train-subway text-railOrange text-2xl"></i>
             <div>
-                <h1 class="font-bold text-base tracking-wide text-white leading-tight">Cant_by_Phone</h1>
-                <p class="text-[11px] text-gray-400">v0.1.0 (궤간 1,435mm)</p>
+                <h1 class="font-extrabold text-xl tracking-wide text-white leading-tight">Cant_by_Phone</h1>
+                <p class="text-[20px] text-gray-400 font-semibold">v0.2.0 (궤간 1,435mm)</p>
             </div>
         </div>
-        <div id="osBadge" class="hidden text-[11px] px-2 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700">
+        <div id="osBadge" class="hidden text-[20px] font-bold px-3 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600">
             <i id="osIcon" class="mr-1"></i><span id="osText">OS</span>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 overflow-y-auto p-4 space-y-4">
+    <main class="flex-1 overflow-y-auto p-4 space-y-6">
 
         <!-- ================= STEP 1: 권한 및 가이드 화면 ================= -->
-        <section id="step1" class="space-y-4">
-            <div class="bg-railCard p-4 rounded-xl border border-railBorder space-y-3">
-                <h2 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-[#ff8c00] fa-compass text-railOrange"></i>
-                    1. 장비 설치 및 센서 권한
+        <section id="step1" class="space-y-6">
+            <div class="bg-railCard p-5 rounded-2xl border border-railBorder space-y-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-railOrange"></i>
+                    1. 장비 설치 및 권한
                 </h2>
-                <p class="text-gray-300 text-field-sm leading-relaxed">
-                    1,800mm 수평계 한쪽 끝에 스마트폰을 아래 지침대로 올바르게 거치해 주세요.
+                <p class="text-gray-200 text-xl leading-relaxed">
+                    1,800mm 수평계 한쪽 끝에 스마트폰을 올바르게 거치해 주세요.
                 </p>
 
                 <!-- 거치 구조 Diagram (SVG) -->
-                <div class="bg-black/50 p-3 rounded-lg border border-gray-800 text-center relative">
-                    <svg viewBox="0 0 320 130" class="w-full h-auto">
+                <div class="bg-black/60 p-4 rounded-xl border border-gray-800 text-center relative">
+                    <svg viewBox="0 0 320 140" class="w-full h-auto">
                         <!-- 수평계 Bar -->
-                        <rect x="10" y="70" width="300" height="20" rx="3" fill="#374151" stroke="#6B7280" stroke-width="1"/>
-                        <text x="160" y="84" fill="#9CA3AF" font-size="10" text-anchor="middle">1,800mm 수평계 (기포관 내장)</text>
+                        <rect x="10" y="75" width="300" height="24" rx="4" fill="#374151" stroke="#6B7280" stroke-width="1.5"/>
+                        <text x="160" y="91" fill="#D1D5DB" font-size="12" font-weight="bold" text-anchor="middle">1,800mm 수평계 (기포관 내장)</text>
                         <!-- 기포관 -->
-                        <rect x="140" y="73" width="40" height="14" rx="7" fill="#10B981" opacity="0.8"/>
-                        <circle cx="160" cy="80" r="4" fill="#FFFFFF"/>
+                        <rect x="140" y="78" width="40" height="18" rx="9" fill="#10B981" opacity="0.9"/>
+                        <circle cx="160" cy="87" r="5" fill="#FFFFFF"/>
 
                         <!-- 레일 좌우 표시 -->
-                        <rect x="20" y="90" width="16" height="30" fill="#9CA3AF" rx="2"/>
-                        <rect x="284" y="90" width="16" height="30" fill="#9CA3AF" rx="2"/>
-                        <line x1="28" y1="90" x2="292" y2="90" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-                        <text x="160" y="112" fill="#EF4444" font-size="10" text-anchor="middle">표준 궤간: 1,435 mm</text>
+                        <rect x="20" y="99" width="18" height="32" fill="#9CA3AF" rx="2"/>
+                        <rect x="282" y="99" width="18" height="32" fill="#9CA3AF" rx="2"/>
+                        <line x1="29" y1="99" x2="291" y2="99" stroke="#EF4444" stroke-width="2" stroke-dasharray="4,4"/>
+                        <text x="160" y="123" fill="#EF4444" font-size="12" font-weight="bold" text-anchor="middle">표준 궤간: 1,435 mm</text>
 
                         <!-- 스마트폰 -->
-                        <rect x="20" y="38" width="70" height="30" rx="4" fill="#1F2937" stroke="#3B82F6" stroke-width="2"/>
-                        <text x="55" y="52" fill="#60A5FA" font-size="9" text-anchor="middle" font-weight="bold">스마트폰</text>
-                        <text x="55" y="63" fill="#9CA3AF" font-size="8" text-anchor="middle">화면 하늘향함</text>
+                        <rect x="20" y="35" width="80" height="36" rx="5" fill="#1F2937" stroke="#3B82F6" stroke-width="2.5"/>
+                        <text x="60" y="52" fill="#60A5FA" font-size="11" font-weight="bold" text-anchor="middle">스마트폰</text>
+                        <text x="60" y="64" fill="#9CA3AF" font-size="10" text-anchor="middle">화면 하늘향함</text>
                         
-                        <!-- USB-C 포트 화살표 -->
-                        <path d="M 15 53 L 20 53" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrow)"/>
-                        <text x="45" y="28" fill="#F59E0B" font-size="8" text-anchor="middle">◄ USB-C 포트 끝단향함</text>
+                        <!-- USB-C 포트 -->
+                        <path d="M 12 53 L 20 53" stroke="#F59E0B" stroke-width="3"/>
+                        <text x="50" y="24" fill="#F59E0B" font-size="10" font-weight="bold" text-anchor="middle">◄ USB-C 포트 끝단향함</text>
                     </svg>
                 </div>
 
-                <div class="space-y-2 text-xs text-gray-400 bg-gray-900/60 p-3 rounded-lg border border-gray-800">
-                    <p class="flex items-start gap-1.5"><i class="fa-solid fa-check text-green-500 mt-0.5"></i> 스마트폰 긴 방향(Y축)이 수평계 긴 막대 방향과 일치</p>
-                    <p class="flex items-start gap-1.5"><i class="fa-solid fa-check text-green-500 mt-0.5"></i> 화면은 하늘(상향)을 바라보게 거치</p>
-                    <p class="flex items-start gap-1.5"><i class="fa-solid fa-check text-green-500 mt-0.5"></i> 스마트폰 부속 레일이 높을 때: (+), 낮을 때: (-)</p>
+                <div class="space-y-3 text-xl text-gray-300 bg-gray-900/80 p-4 rounded-xl border border-gray-800">
+                    <p class="flex items-start gap-2"><i class="fa-solid fa-check text-green-400 mt-1"></i> 스마트폰 긴 방향(Y축)이 수평계 막대와 일치</p>
+                    <p class="flex items-start gap-2"><i class="fa-solid fa-check text-green-400 mt-1"></i> 화면은 하늘(상향)을 바라보게 거치</p>
+                    <p class="flex items-start gap-2"><i class="fa-solid fa-check text-green-400 mt-1"></i> 폰 설치 쪽 레일이 높으면 (+), 낮으면 (-)</p>
                 </div>
             </div>
 
-            <div class="bg-railCard p-4 rounded-xl border border-railBorder space-y-3">
-                <h3 class="text-sm font-bold text-white">스마트폰 OS 선택 및 센서 권한 승인</h3>
-                <p class="text-xs text-gray-400">
-                    iOS(아이폰) 및 최신 브라우저 요구사항에 따라 센서 접근 권한 동의가 필요합니다.
+            <div class="bg-railCard p-5 rounded-2xl border border-railBorder space-y-4">
+                <h3 class="text-xl font-bold text-white">스마트폰 OS 선택 및 권한 승인</h3>
+                <p class="text-xl text-gray-400">
+                    사용하시는 스마트폰 종류를 선택해 주세요.
                 </p>
-                <div class="grid grid-cols-2 gap-3 pt-1">
-                    <button id="btnSelectIos" onclick="initPlatform('ios')" class="flex flex-col items-center justify-center p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 transition active:scale-95">
-                        <i class="fa-brands fa-apple text-2xl text-white mb-1"></i>
-                        <span class="font-bold text-white text-xs">iPhone (iOS)</span>
-                        <span class="text-[10px] text-gray-400 mt-0.5">권한 요청 팝업 발생</span>
+                <div class="grid grid-cols-2 gap-4 pt-1">
+                    <button id="btnSelectIos" onclick="initPlatform('ios')" class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 transition active:scale-95">
+                        <i class="fa-brands fa-apple text-4xl text-white mb-2"></i>
+                        <span class="font-extrabold text-white text-xl">iPhone (iOS)</span>
+                        <span class="text-xl text-gray-400 mt-1">권한 승인</span>
                     </button>
-                    <button id="btnSelectAndroid" onclick="initPlatform('android')" class="flex flex-col items-center justify-center p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 transition active:scale-95">
-                        <i class="fa-brands fa-android text-2xl text-green-400 mb-1"></i>
-                        <span class="font-bold text-white text-xs">Android / 기타</span>
-                        <span class="text-[10px] text-gray-400 mt-0.5">자동 센서 바인딩</span>
+                    <button id="btnSelectAndroid" onclick="initPlatform('android')" class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 transition active:scale-95">
+                        <i class="fa-brands fa-android text-4xl text-green-400 mb-2"></i>
+                        <span class="font-extrabold text-white text-xl">Android</span>
+                        <span class="text-xl text-gray-400 mt-1">자동 연결</span>
                     </button>
                 </div>
             </div>
         </section>
 
         <!-- ================= STEP 2: 메인 메뉴 선택 ================= -->
-        <section id="step2" class="hidden space-y-3">
-            <div class="bg-railCard p-4 rounded-xl border border-railBorder flex items-center justify-between">
+        <section id="step2" class="hidden space-y-4">
+            <div class="bg-railCard p-4 rounded-2xl border border-railBorder flex items-center justify-between">
                 <div>
-                    <h2 class="text-sm font-bold text-white">작업 메뉴 선택</h2>
-                    <p class="text-xs text-gray-400">원하시는 동작 모드를 선택해 주세요.</p>
+                    <h2 class="text-xl font-bold text-white">작업 메뉴 선택</h2>
+                    <p class="text-xl text-gray-400">원하는 작업을 선택해 주세요.</p>
                 </div>
-                <button onclick="resetPlatform()" class="text-xs text-gray-400 underline hover:text-gray-200">OS 재선택</button>
+                <button onclick="resetPlatform()" class="text-xl text-gray-300 underline hover:text-white">OS 재선택</button>
             </div>
 
-            <button onclick="navTo('calibration')" class="w-full bg-railCard hover:bg-gray-800 border border-railBorder p-4 rounded-xl flex items-center justify-between transition active:scale-98">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-lg bg-blue-900/40 border border-blue-500/30 flex items-center justify-center text-blue-400">
-                        <i class="fa-solid fa-scale-balanced text-lg"></i>
+            <button onclick="navTo('calibration')" class="w-full bg-railCard hover:bg-gray-800 border border-railBorder p-5 rounded-2xl flex items-center justify-between transition active:scale-98">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-900/50 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0">
+                        <i class="fa-solid fa-scale-balanced text-2xl"></i>
                     </div>
                     <div class="text-left">
-                        <h3 class="font-bold text-white text-sm">영점 조정 (Zero Calibration)</h3>
-                        <p class="text-xs text-gray-400">2단계 수평계 반전 측정으로 센서 오프셋 보정</p>
+                        <h3 class="font-bold text-white text-xl">영점 조정</h3>
+                        <p class="text-xl text-gray-400">2단계 반전 측정으로 오차 보정</p>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-gray-500 text-xs"></i>
+                <i class="fa-solid fa-chevron-right text-gray-400 text-xl"></i>
             </button>
 
-            <button onclick="navTo('sensitivity')" class="w-full bg-railCard hover:bg-gray-800 border border-railBorder p-4 rounded-xl flex items-center justify-between transition active:scale-98">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-lg bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                        <i class="fa-solid fa-sliders text-lg"></i>
+            <button onclick="navTo('sensitivity')" class="w-full bg-railCard hover:bg-gray-800 border border-railBorder p-5 rounded-2xl flex items-center justify-between transition active:scale-98">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-900/50 border border-purple-500/40 flex items-center justify-center text-purple-400 shrink-0">
+                        <i class="fa-solid fa-sliders text-2xl"></i>
                     </div>
                     <div class="text-left">
-                        <h3 class="font-bold text-white text-sm">감도(필터) &amp; 시뮬레이터 설정</h3>
-                        <p class="text-xs text-gray-400">이동평균 창 크기 및 테스트 모드 설정</p>
+                        <h3 class="font-bold text-white text-xl">감도(필터) 설정</h3>
+                        <p class="text-xl text-gray-400">샘플링 필터 및 시뮬레이터</p>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-gray-500 text-xs"></i>
+                <i class="fa-solid fa-chevron-right text-gray-400 text-xl"></i>
             </button>
 
-            <button onclick="navTo('measure')" class="w-full bg-railCard hover:bg-gray-800 border border-railOrange/50 p-4 rounded-xl flex items-center justify-between transition active:scale-98">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-lg bg-amber-900/40 border border-railOrange flex items-center justify-center text-railOrange">
-                        <i class="fa-solid fa-chart-line text-lg"></i>
+            <button onclick="navTo('measure')" class="w-full bg-railCard hover:bg-gray-800 border-2 border-railOrange p-5 rounded-2xl flex items-center justify-between transition active:scale-98">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-900/50 border border-railOrange flex items-center justify-center text-railOrange shrink-0">
+                        <i class="fa-solid fa-chart-line text-2xl"></i>
                     </div>
                     <div class="text-left">
-                        <h3 class="font-bold text-white text-sm">실시간 캔트 측정</h3>
-                        <p class="text-xs text-gray-400">실시간 캔트값 확인 및 이력 저장 (최근 10개)</p>
+                        <h3 class="font-extrabold text-white text-xl">실시간 캔트 측정</h3>
+                        <p class="text-xl text-gray-400">캔트 측정 및 이력 저장</p>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-railOrange text-xs"></i>
+                <i class="fa-solid fa-chevron-right text-railOrange text-xl"></i>
             </button>
         </section>
 
         <!-- ================= STEP 3: 영점 조정 (Zero Calibration) ================= -->
-        <section id="step3_calibration" class="hidden space-y-4">
+        <section id="step3_calibration" class="hidden space-y-5">
             <div class="flex items-center justify-between">
-                <button onclick="navTo('menu')" class="text-xs text-gray-400 flex items-center gap-1 hover:text-white">
-                    <i class="fa-solid fa-arrow-left"></i> 메뉴로 돌아가기
+                <button onclick="navTo('menu')" class="text-xl text-gray-300 flex items-center gap-2 hover:text-white">
+                    <i class="fa-solid fa-arrow-left"></i> 메뉴로 이동
                 </button>
-                <span class="text-xs font-semibold text-blue-400 bg-blue-950/60 border border-blue-800 px-2 py-0.5 rounded">영점보정 모드</span>
+                <span class="text-xl font-bold text-blue-400 bg-blue-950 border border-blue-800 px-3 py-1 rounded-lg">영점 보정</span>
             </div>
 
-            <div class="bg-railCard p-4 rounded-xl border border-railBorder space-y-4">
-                <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <div class="bg-railCard p-5 rounded-2xl border border-railBorder space-y-5">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
                     <i class="fa-solid fa-scale-balanced text-blue-400"></i>
                     2단계 반전 측정 영점 보정
                 </h2>
                 
-                <!-- 현재 설정된 오프셋 표시 -->
-                <div class="bg-gray-900/80 p-3 rounded-lg border border-gray-800 flex justify-between items-center text-xs">
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 flex justify-between items-center text-xl">
                     <span class="text-gray-400">현재 보정 오프셋:</span>
                     <span id="currentOffsetDisplay" class="font-mono text-white font-bold">0.00° (0.0 mm)</span>
                 </div>
 
                 <!-- 단계 1 -->
-                <div id="calStep1Box" class="p-3.5 rounded-lg border border-blue-900/50 bg-blue-950/20 space-y-2">
+                <div id="calStep1Box" class="p-4 rounded-xl border border-blue-900 bg-blue-950/30 space-y-3">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-xs text-blue-300">1단계: 정방향 측정 (기포 수평 정렬)</span>
-                        <span id="cal1Status" class="text-[11px] text-gray-400">대기 중</span>
+                        <span class="font-bold text-xl text-blue-300">1단계: 정방향 (기포 수평)</span>
+                        <span id="cal1Status" class="text-xl text-gray-400">대기 중</span>
                     </div>
-                    <p class="text-xs text-gray-400">
-                        수평계의 기포를 중앙(영점)에 맞춘 후 [정방향 측정] 버튼을 누르세요.
+                    <p class="text-xl text-gray-300">
+                        수평계 기포를 중앙에 맞춘 후 측정 버튼을 누르세요.
                     </p>
-                    <button onclick="recordCalStep1()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition active:scale-98">
-                        1단계: 정방향 현재값 기록 (V1)
+                    <button onclick="recordCalStep1()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xl transition active:scale-98">
+                        1단계: 정방향 기록 (V1)
                     </button>
-                    <div class="text-[11px] text-gray-400 font-mono text-right" id="v1Display">V1: -</div>
+                    <div class="text-xl text-gray-300 font-mono text-right" id="v1Display">V1: -</div>
                 </div>
 
                 <!-- 단계 2 -->
-                <div id="calStep2Box" class="p-3.5 rounded-lg border border-gray-800 bg-gray-900/30 opacity-50 space-y-2">
+                <div id="calStep2Box" class="p-4 rounded-xl border border-gray-800 bg-gray-900/30 opacity-50 space-y-3">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-xs text-gray-300">2단계: 수평계 180도 좌우 반전 측정</span>
-                        <span id="cal2Status" class="text-[11px] text-gray-400">대기 중</span>
+                        <span class="font-bold text-xl text-gray-300">2단계: 수평계 180도 반전</span>
+                        <span id="cal2Status" class="text-xl text-gray-400">대기 중</span>
                     </div>
-                    <p class="text-xs text-gray-400">
-                        수평계의 좌우 방향을 180도 완전히 반대로 바꿔 동일 레일에 올려놓은 뒤 [역방향 측정]을 누르세요.
+                    <p class="text-xl text-gray-300">
+                        수평계를 좌우 반대로 바꿔 레일에 올린 뒤 버튼을 누르세요.
                     </p>
-                    <button id="btnCalStep2" disabled onclick="recordCalStep2()" class="w-full py-2.5 bg-gray-700 text-gray-400 font-bold rounded-lg text-xs transition">
-                        2단계: 역방향 현재값 기록 (V2)
+                    <button id="btnCalStep2" disabled onclick="recordCalStep2()" class="w-full py-3.5 bg-gray-700 text-gray-400 font-extrabold rounded-xl text-xl transition">
+                        2단계: 역방향 기록 (V2)
                     </button>
-                    <div class="text-[11px] text-gray-400 font-mono text-right" id="v2Display">V2: -</div>
+                    <div class="text-xl text-gray-300 font-mono text-right" id="v2Display">V2: -</div>
                 </div>
 
                 <!-- 보정 결과 -->
-                <div id="calResultBox" class="hidden p-3 bg-green-950/40 border border-green-800 rounded-lg space-y-2 text-xs">
-                    <div class="font-bold text-green-400 flex items-center gap-1">
-                        <i class="fa-solid fa-circle-check"></i> 영점 보정 완료!
+                <div id="calResultBox" class="hidden p-4 bg-green-950/60 border border-green-800 rounded-xl space-y-3 text-xl">
+                    <div class="font-bold text-green-400 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-2xl"></i> 영점 보정 완료!
                     </div>
-                    <p class="text-gray-300 leading-relaxed" id="calResultText">
-                        계산된 영점 기울기 오프셋: 0.00°
+                    <p class="text-gray-200 leading-relaxed" id="calResultText">
+                        계산된 기울기 오프셋: 0.00°
                     </p>
-                    <button onclick="resetCalibration()" class="text-xs text-gray-400 underline">영점 초기화</button>
+                    <button onclick="resetCalibration()" class="text-xl text-gray-400 underline">영점 초기화</button>
                 </div>
             </div>
         </section>
 
         <!-- ================= STEP 4: 감도/필터 & 시뮬레이터 설정 ================= -->
-        <section id="step4_sensitivity" class="hidden space-y-4">
+        <section id="step4_sensitivity" class="hidden space-y-5">
             <div class="flex items-center justify-between">
-                <button onclick="navTo('menu')" class="text-xs text-gray-400 flex items-center gap-1 hover:text-white">
-                    <i class="fa-solid fa-arrow-left"></i> 메뉴로 돌아가기
+                <button onclick="navTo('menu')" class="text-xl text-gray-300 flex items-center gap-2 hover:text-white">
+                    <i class="fa-solid fa-arrow-left"></i> 메뉴로 이동
                 </button>
-                <span class="text-xs font-semibold text-purple-400 bg-purple-950/60 border border-purple-800 px-2 py-0.5 rounded">필터 설정</span>
+                <span class="text-xl font-bold text-purple-400 bg-purple-950 border border-purple-800 px-3 py-1 rounded-lg">필터 설정</span>
             </div>
 
-            <div class="bg-railCard p-4 rounded-xl border border-railBorder space-y-4">
-                <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <div class="bg-railCard p-5 rounded-2xl border border-railBorder space-y-5">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-purple-400"></i>
-                    이동평균필터 &amp; 진동 안정화 설정
+                    이동평균필터 &amp; 진동 설정
                 </h2>
 
                 <!-- 이동평균 Window Size -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <label class="text-gray-300 font-semibold">이동평균 샘플 창 (Window Size):</label>
-                        <span id="windowSizeVal" class="font-mono text-purple-400 font-bold">15개 샘플 (~0.5초)</span>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center text-xl">
+                        <label class="text-gray-200 font-bold">이동평균 창 크기:</label>
+                        <span id="windowSizeVal" class="font-mono text-purple-400 font-bold">15개 (~0.5초)</span>
                     </div>
-                    <input type="range" id="inputWindowSize" min="5" max="40" step="1" value="15" oninput="updateFilterConfig()" class="w-full accent-purple-500 bg-gray-800 h-2 rounded-lg">
-                    <p class="text-[11px] text-gray-400">
-                        샘플 수치가 클수록 현장 미세진동 상쇄 효과가 커지지만 반응 속도가 느려집니다. (1초 이내 수렴 권장: 10~20)
+                    <input type="range" id="inputWindowSize" min="5" max="40" step="1" value="15" oninput="updateFilterConfig()" class="w-full accent-purple-500 bg-gray-800 h-4 rounded-lg">
+                    <p class="text-xl text-gray-400">
+                        샘플이 많을수록 진동을 잘 다듬지만 반사속도가 느려집니다.
                     </p>
                 </div>
 
                 <!-- 안정화 판단 임계값 (표준편차) -->
-                <div class="space-y-2 pt-2 border-t border-gray-800">
-                    <div class="flex justify-between items-center text-xs">
-                        <label class="text-gray-300 font-semibold">안정 상태 표준편차 임계값:</label>
+                <div class="space-y-3 pt-4 border-t border-gray-800">
+                    <div class="flex justify-between items-center text-xl">
+                        <label class="text-gray-200 font-bold">안정 표준편차 임계값:</label>
                         <span id="stdDevThresholdVal" class="font-mono text-purple-400 font-bold">0.3 mm</span>
                     </div>
-                    <input type="range" id="inputStdDev" min="0.1" max="1.5" step="0.1" value="0.3" oninput="updateFilterConfig()" class="w-full accent-purple-500 bg-gray-800 h-2 rounded-lg">
-                    <p class="text-[11px] text-gray-400">
-                        최근 측정값들의 변동폭(표준편차)이 이 기준 이하일 때 [안정됨/오렌지색]으로 바뀝니다.
+                    <input type="range" id="inputStdDev" min="0.1" max="1.5" step="0.1" value="0.3" oninput="updateFilterConfig()" class="w-full accent-purple-500 bg-gray-800 h-4 rounded-lg">
+                    <p class="text-xl text-gray-400">
+                        변동 폭이 이 값 이하일 때 오렌지색(안정)으로 변경됩니다.
                     </p>
                 </div>
 
                 <!-- 시뮬레이터 모드 (PC 테스트용) -->
-                <div class="space-y-2 pt-3 border-t border-gray-800">
+                <div class="space-y-3 pt-4 border-t border-gray-800">
                     <div class="flex items-center justify-between">
                         <div>
-                            <span class="text-xs font-semibold text-white">가상 센서 시뮬레이터</span>
-                            <p class="text-[11px] text-gray-400">센서가 없는 PC 브라우저 검증용 가상 노이즈 발생기</p>
+                            <span class="text-xl font-bold text-white">가상 시뮬레이터</span>
+                            <p class="text-xl text-gray-400">PC 테스트용 가상 노이즈 생성기</p>
                         </div>
-                        <input type="checkbox" id="chkSimulator" onchange="toggleSimulator()" class="w-4 h-4 accent-purple-500 rounded">
+                        <input type="checkbox" id="chkSimulator" onchange="toggleSimulator()" class="w-6 h-6 accent-purple-500 rounded">
                     </div>
                     
-                    <div id="simControlBox" class="hidden space-y-2 bg-gray-900/60 p-3 rounded-lg border border-gray-800 text-xs">
+                    <div id="simControlBox" class="hidden space-y-3 bg-gray-900 p-4 rounded-xl border border-gray-800 text-xl">
                         <div class="flex justify-between">
-                            <span>가상 캔트 목표값:</span>
+                            <span>가상 캔트 목표:</span>
                             <span id="simTargetVal" class="font-mono font-bold text-white">+15.0 mm</span>
                         </div>
-                        <input type="range" id="inputSimTarget" min="-50" max="50" step="1" value="15" oninput="updateSimTarget()" class="w-full accent-purple-400 bg-gray-800 h-1.5 rounded-lg">
+                        <input type="range" id="inputSimTarget" min="-50" max="50" step="1" value="15" oninput="updateSimTarget()" class="w-full accent-purple-400 bg-gray-800 h-3 rounded-lg">
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ================= STEP 5: 실시간 캔트 측정 ================= -->
-        <section id="step5_measure" class="hidden space-y-4">
+        <section id="step5_measure" class="hidden space-y-5">
             <div class="flex items-center justify-between">
-                <button onclick="navTo('menu')" class="text-xs text-gray-400 flex items-center gap-1 hover:text-white">
-                    <i class="fa-solid fa-arrow-left"></i> 메뉴로 돌아가기
+                <button onclick="navTo('menu')" class="text-xl text-gray-300 flex items-center gap-2 hover:text-white">
+                    <i class="fa-solid fa-arrow-left"></i> 메뉴로 이동
                 </button>
-                <div class="flex items-center gap-2">
-                    <span id="liveStatusBadge" class="text-xs font-semibold px-2 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700">
-                        계산 중
-                    </span>
-                </div>
+                <span id="liveStatusBadge" class="text-xl font-bold px-3 py-1 rounded-lg bg-gray-800 text-gray-200 border border-gray-700">
+                    계산 중
+                </span>
             </div>
 
             <!-- 메인 캔트 디스플레이 카드 -->
-            <div class="bg-railCard p-5 rounded-2xl border border-railBorder space-y-4 text-center shadow-lg relative overflow-hidden">
-                <div class="flex justify-between items-center text-xs text-gray-400 border-b border-gray-800 pb-2">
-                    <span>측정 궤간: <strong class="text-gray-200">1,435 mm</strong></span>
-                    <span>영점보정: <strong id="measureZeroOffsetLabel" class="text-gray-200">적용됨</strong></span>
+            <div class="bg-railCard p-6 rounded-3xl border-2 border-railBorder space-y-5 text-center shadow-2xl relative overflow-hidden">
+                <div class="flex justify-between items-center text-xl text-gray-400 border-b border-gray-800 pb-3">
+                    <span>궤간: <strong class="text-gray-100">1,435mm</strong></span>
+                    <span>영점: <strong id="measureZeroOffsetLabel" class="text-gray-100">적용됨</strong></span>
                 </div>
 
                 <!-- 상태 안내 및 주 수치 표출 -->
-                <div class="py-2 space-y-1">
-                    <div id="stabilityNotice" class="text-xs font-bold transition-colors duration-200 text-gray-300 flex items-center justify-center gap-1.5">
-                        <span class="inline-block w-2 h-2 rounded-full bg-white animate-ping"></span>
+                <div class="py-2 space-y-2">
+                    <div id="stabilityNotice" class="text-xl font-extrabold transition-colors duration-200 text-gray-300 flex items-center justify-center gap-2">
+                        <span class="inline-block w-3 h-3 rounded-full bg-white animate-ping"></span>
                         <span id="stabilityNoticeText">값이 흔들림...</span>
                     </div>
 
                     <!-- 실시간 캔트 수치 (소수점 첫째자리) -->
-                    <div class="flex items-baseline justify-center gap-1 my-2">
-                        <span id="cantValueDisplay" class="text-6xl font-extrabold tracking-tight font-mono text-white transition-colors duration-300">
+                    <div class="flex items-baseline justify-center gap-2 my-3">
+                        <span id="cantValueDisplay" class="text-7xl font-black tracking-tight font-mono text-white transition-colors duration-300">
                             +0.0
                         </span>
-                        <span class="text-xl font-bold text-gray-400">mm</span>
+                        <span class="text-3xl font-extrabold text-gray-400">mm</span>
                     </div>
 
-                    <div class="text-[11px] text-gray-400 font-mono flex justify-center gap-3">
+                    <div class="text-xl text-gray-400 font-mono flex justify-center gap-4 pt-1">
                         <span>기울기: <span id="pitchAngleDisplay">0.00°</span></span>
-                        <span>표준편차: <span id="stdDevDisplay">0.0</span></span>
+                        <span>편차: <span id="stdDevDisplay">0.0</span></span>
                     </div>
                 </div>
 
                 <!-- 저장 버튼 -->
-                <button onclick="saveCurrentCant()" class="w-full py-3 bg-railOrange hover:bg-amber-600 text-black font-extrabold rounded-xl text-sm transition shadow-md active:scale-98 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-floppy-disk text-base"></i>
+                <button onclick="saveCurrentCant()" class="w-full py-4 bg-railOrange hover:bg-amber-600 text-black font-black rounded-2xl text-2xl transition shadow-lg active:scale-98 flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-floppy-disk text-3xl"></i>
                     현재 캔트값 저장
                 </button>
             </div>
 
             <!-- 최근 10개 데이터 기록 리스트 -->
-            <div class="bg-railCard p-4 rounded-xl border border-railBorder space-y-3">
-                <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-                    <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+            <div class="bg-railCard p-5 rounded-2xl border border-railBorder space-y-4">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
                         <i class="fa-solid fa-clock-rotate-left text-gray-400"></i>
                         최근 저장 기록 (최대 10개)
                     </h3>
-                    <button onclick="clearHistory()" class="text-[11px] text-gray-500 hover:text-red-400">전체 삭제</button>
+                    <button onclick="clearHistory()" class="text-xl text-gray-400 hover:text-red-400 underline">삭제</button>
                 </div>
 
-                <!-- 이력 항목 목록 (opacity 계층 적용) -->
-                <div id="historyList" class="space-y-1.5">
-                    <p class="text-xs text-gray-500 text-center py-4">저장된 측정 이력이 없습니다.</p>
+                <!-- 이력 항목 목록 -->
+                <div id="historyList" class="space-y-2.5">
+                    <p class="text-xl text-gray-500 text-center py-6">저장된 측정 이력이 없습니다.</p>
                 </div>
             </div>
         </section>
@@ -374,35 +370,31 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-railCard border-t border-railBorder p-2 text-center text-[11px] text-gray-400">
-        철도 궤도 캔트 측정기 (Cant_by_Phone) &bull; 1,800mm 수평계 전용
+    <footer class="bg-railCard border-t border-railBorder p-3 text-center text-xl text-gray-400">
+        철도 궤도 캔트 측정기 &bull; 1,800mm 수평계
     </footer>
 
     <!-- Toast Notification Layer -->
-    <div id="toast" class="fixed bottom-12 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-4 py-2 rounded-full border border-gray-600 shadow-xl opacity-0 transition-opacity pointer-events-none z-50">
+    <div id="toast" class="fixed bottom-14 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xl px-6 py-3 rounded-full border border-gray-600 shadow-2xl opacity-0 transition-opacity pointer-events-none z-50 whitespace-nowrap">
         알림 메시지
     </div>
 
     <!-- JavaScript Application Logic -->
     <script>
-        /**
-         * Global Application State
-         */
         const CONFIG = {
-            RAIL_GAUGE: 1435.0, // mm (표준 궤간)
-            LEVEL_BAR_LENGTH: 1800.0, // mm (수평계 길이)
-            STORAGE_KEY_OFFSET: 'cant_zero_offset_v1',
-            STORAGE_KEY_HISTORY: 'cant_history_v1'
+            RAIL_GAUGE: 1435.0,
+            STORAGE_KEY_OFFSET: 'cant_zero_offset_v2',
+            STORAGE_KEY_HISTORY: 'cant_history_v2'
         };
 
         let state = {
-            os: null, // 'ios' | 'android'
-            zeroOffset: 0.0, // rad
-            rawPitchHistory: [], // Filter Window Buffer
+            os: null,
+            zeroOffset: 0.0,
+            rawPitchHistory: [],
             windowSize: 15,
-            stdDevThreshold: 0.3, // mm
-            currentFilteredCant: 0.0, // mm
-            currentFilteredPitch: 0.0, // deg
+            stdDevThreshold: 0.3,
+            currentFilteredCant: 0.0,
+            currentFilteredPitch: 0.0,
             currentStdDev: 0.0,
             isStable: false,
             calV1: null,
@@ -412,14 +404,12 @@
             savedHistory: []
         };
 
-        // DOM Loaded Init
         window.addEventListener('DOMContentLoaded', () => {
             loadStoredSettings();
             renderHistory();
             startSensorPipeline();
         });
 
-        /* ================= STORAGE HANDLERS ================= */
         function loadStoredSettings() {
             const savedOffset = localStorage.getItem(CONFIG.STORAGE_KEY_OFFSET);
             if (savedOffset !== null) {
@@ -437,7 +427,7 @@
         function updateOffsetUI() {
             const offsetDeg = (state.zeroOffset * (180 / Math.PI)).toFixed(2);
             const offsetMm = (CONFIG.RAIL_GAUGE * Math.sin(state.zeroOffset)).toFixed(1);
-            const disp = `${offsetDeg}° (${offsetMm > 0 ? '+' : ''}${offsetMm} mm)`;
+            const disp = `${offsetDeg}° (${offsetMm > 0 ? '+' : ''}${offsetMm}mm)`;
             
             const el1 = document.getElementById('currentOffsetDisplay');
             if(el1) el1.innerText = disp;
@@ -445,7 +435,6 @@
             if(el2) el2.innerText = (state.zeroOffset === 0) ? '없음' : disp;
         }
 
-        /* ================= NAVIGATION ================= */
         function navTo(screenId) {
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.add('hidden');
@@ -459,7 +448,6 @@
             else if (screenId === 'measure') document.getElementById('step5_measure').classList.remove('hidden');
         }
 
-        /* ================= OS PLATFORM & SENSOR INIT ================= */
         function initPlatform(osType) {
             state.os = osType;
             const badge = document.getElementById('osBadge');
@@ -474,7 +462,7 @@
             } else {
                 osIcon.className = "fa-brands fa-android text-green-400";
                 osText.innerText = "Android";
-                showToast("Android 센서가 활성화되었습니다.");
+                showToast("Android 센서가 연결되었습니다.");
                 navTo('menu');
             }
         }
@@ -498,22 +486,18 @@
                         }
                     })
                     .catch(() => {
-                        showToast("권한 요청 중 오류 발생 (HTTPS 확인)");
-                        navTo('menu'); // Fallback to menu for simulator test
+                        showToast("권한 요청 완료 (테스트 모드 가동)");
+                        navTo('menu');
                     });
             } else {
-                showToast("iOS DeviceMotion API를 지원하지 않거나 권한이 필요하지 않습니다.");
+                showToast("기본 센서가 활성화되었습니다.");
                 navTo('menu');
             }
         }
 
-        /* ================= SENSOR & MATH PIPELINE ================= */
         function startSensorPipeline() {
-            // Acceleration/Orientation Event Listeners
             window.addEventListener('deviceorientation', handleOrientationEvent, true);
             window.addEventListener('devicemotion', handleMotionEvent, true);
-
-            // High frequency processing loop (~30Hz)
             setInterval(processSensorDataLoop, 33);
         }
 
@@ -521,23 +505,16 @@
 
         function handleOrientationEvent(event) {
             if (state.simulatorActive) return;
-            // Gamma: Roll (Side-to-Side), Beta: Pitch (Front-to-Back)
-            // Y axis aligns with bar long axis, Pitch corresponds to rotation along X axis
             let pitchDeg = event.beta || 0; 
-            
-            // Normalize & convert to radians
             latestRawPitchRad = (pitchDeg * Math.PI) / 180.0;
         }
 
         function handleMotionEvent(event) {
             if (state.simulatorActive) return;
-            // Alternative calculation using Accelerometer Vector if Orientation is not precise
             if (event.accelerationIncludingGravity) {
                 const ay = event.accelerationIncludingGravity.y || 0;
                 const ax = event.accelerationIncludingGravity.x || 0;
                 const az = event.accelerationIncludingGravity.z || 9.81;
-
-                // Pitch angle relative to horizontal plane
                 const pitchRad = Math.atan2(ay, Math.sqrt(ax * ax + az * az));
                 if (!isNaN(pitchRad)) {
                     latestRawPitchRad = pitchRad;
@@ -545,26 +522,19 @@
             }
         }
 
-        /* Simulator Data Generator */
         function processSimulatorData() {
-            // Add noise around target cant
-            const noise = (Math.random() - 0.5) * 0.8; // +/- 0.4mm random noise
+            const noise = (Math.random() - 0.5) * 0.8;
             const targetMm = state.simTargetCant + noise;
-            // Back calculate pitch rad: Cant = 1435 * sin(pitch) => pitch = asin(Cant / 1435)
             const targetRad = Math.asin(Math.max(-1, Math.min(1, targetMm / CONFIG.RAIL_GAUGE)));
             latestRawPitchRad = targetRad;
         }
 
-        /* Processing Loop: Moving Average & StdDev Filtering */
         function processSensorDataLoop() {
             if (state.simulatorActive) {
                 processSimulatorData();
             }
 
-            // Apply Zero Offset Correction
             const correctedPitchRad = latestRawPitchRad - state.zeroOffset;
-
-            // Push to buffer
             state.rawPitchHistory.push(correctedPitchRad);
             while (state.rawPitchHistory.length > state.windowSize) {
                 state.rawPitchHistory.shift();
@@ -572,30 +542,23 @@
 
             if (state.rawPitchHistory.length === 0) return;
 
-            // 1. Calculate Moving Average Pitch
             const sumPitch = state.rawPitchHistory.reduce((a, b) => a + b, 0);
             const avgPitchRad = sumPitch / state.rawPitchHistory.length;
-
-            // 2. Trigonometric Cant Calculation: Cant = 1435 * sin(pitch)
             const cantMm = CONFIG.RAIL_GAUGE * Math.sin(avgPitchRad);
 
-            // 3. Standard Deviation Calculation (for stability check)
             const cantBuffer = state.rawPitchHistory.map(p => CONFIG.RAIL_GAUGE * Math.sin(p));
             const meanCant = cantBuffer.reduce((a, b) => a + b, 0) / cantBuffer.length;
             const variance = cantBuffer.reduce((a, b) => a + Math.pow(b - meanCant, 2), 0) / cantBuffer.length;
             const stdDevMm = Math.sqrt(variance);
 
-            // Update State
             state.currentFilteredCant = cantMm;
             state.currentFilteredPitch = avgPitchRad * (180 / Math.PI);
             state.currentStdDev = stdDevMm;
             state.isStable = (stdDevMm <= state.stdDevThreshold);
 
-            // Update UI
             updateMeasurementUI();
         }
 
-        /* ================= REAL-TIME MEASUREMENT UI ================= */
         function updateMeasurementUI() {
             const cantDisplay = document.getElementById('cantValueDisplay');
             const pitchDisplay = document.getElementById('pitchAngleDisplay');
@@ -606,31 +569,26 @@
 
             if (!cantDisplay) return;
 
-            // Cant Value Formatting: 1 decimal place with explicit sign
             const formattedVal = (state.currentFilteredCant >= 0 ? '+' : '') + state.currentFilteredCant.toFixed(1);
             cantDisplay.innerText = formattedVal;
             pitchDisplay.innerText = state.currentFilteredPitch.toFixed(2) + '°';
             stdDevDisplay.innerText = state.currentStdDev.toFixed(2);
 
-            // Visual Feedback according to stability
             if (state.isStable) {
-                // Orange for Stable
-                cantDisplay.className = "text-6xl font-extrabold tracking-tight font-mono text-railOrange transition-colors duration-300";
+                cantDisplay.className = "text-7xl font-black tracking-tight font-mono text-railOrange transition-colors duration-300";
                 noticeText.innerText = "안정됨 (수렴)";
-                noticeContainer.className = "text-xs font-bold transition-colors duration-200 text-railOrange flex items-center justify-center gap-1.5";
+                noticeContainer.className = "text-xl font-extrabold transition-colors duration-200 text-railOrange flex items-center justify-center gap-2";
                 badge.innerText = "안정됨";
-                badge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-950 text-railOrange border border-railOrange/40";
+                badge.className = "text-xl font-bold px-3 py-1 rounded-lg bg-amber-950 text-railOrange border border-railOrange/50";
             } else {
-                // White for Unstable/Shaking
-                cantDisplay.className = "text-6xl font-extrabold tracking-tight font-mono text-white transition-colors duration-300";
+                cantDisplay.className = "text-7xl font-black tracking-tight font-mono text-white transition-colors duration-300";
                 noticeText.innerText = "값이 흔들림...";
-                noticeContainer.className = "text-xs font-bold transition-colors duration-200 text-gray-300 flex items-center justify-center gap-1.5";
+                noticeContainer.className = "text-xl font-extrabold transition-colors duration-200 text-gray-300 flex items-center justify-center gap-2";
                 badge.innerText = "계산 중";
-                badge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700";
+                badge.className = "text-xl font-bold px-3 py-1 rounded-lg bg-gray-800 text-gray-300 border border-gray-700";
             }
         }
 
-        /* Save Current Measurement to Recent 10 History */
         function saveCurrentCant() {
             const record = {
                 id: Date.now(),
@@ -640,14 +598,14 @@
                 isStable: state.isStable
             };
 
-            state.savedHistory.unshift(record); // Add to front
+            state.savedHistory.unshift(record);
             if (state.savedHistory.length > 10) {
-                state.savedHistory.pop(); // Maintain max 10
+                state.savedHistory.pop();
             }
 
             localStorage.setItem(CONFIG.STORAGE_KEY_HISTORY, JSON.stringify(state.savedHistory));
             renderHistory();
-            showToast(`캔트값 ${record.cant}mm 저장됨`);
+            showToast(`캔트값 ${record.cant}mm 저장 완료`);
         }
 
         function renderHistory() {
@@ -655,24 +613,24 @@
             if (!container) return;
 
             if (state.savedHistory.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">저장된 측정 이력이 없습니다.</p>`;
+                container.innerHTML = `<p class="text-xl text-gray-500 text-center py-6">저장된 측정 이력이 없습니다.</p>`;
                 return;
             }
 
-            // Decreasing Opacity Formula: Index 0 (1.0) -> Index 9 (~0.25)
+            // Opacity decay formula for top 10 items (1.0 -> 0.25)
             container.innerHTML = state.savedHistory.map((item, idx) => {
-                const opacity = (1.0 - (idx * 0.08)).toFixed(2);
+                const opacity = (1.0 - (idx * 0.075)).toFixed(2);
                 const isPos = parseFloat(item.cant) >= 0;
                 return `
-                    <div style="opacity: ${opacity};" class="bg-gray-900/80 p-2.5 rounded-lg border border-gray-800 flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded font-mono">#${idx + 1}</span>
-                            <span class="text-gray-400 font-mono">${item.timestamp}</span>
-                        </div>
+                    <div style="opacity: ${opacity};" class="bg-gray-900 p-3.5 rounded-xl border border-gray-800 flex items-center justify-between text-xl">
                         <div class="flex items-center gap-3">
-                            <span class="text-gray-400 text-[11px]">기울기: ${item.pitch}°</span>
-                            <span class="font-mono font-bold text-sm ${isPos ? 'text-amber-400' : 'text-blue-400'}">
-                                ${isPos ? '+' : ''}${item.cant} mm
+                            <span class="text-xl bg-gray-800 text-gray-400 px-2 py-0.5 rounded font-mono">#${idx + 1}</span>
+                            <span class="text-gray-300 font-mono">${item.timestamp}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-400 text-xl">${item.pitch}°</span>
+                            <span class="font-mono font-black text-2xl ${isPos ? 'text-amber-400' : 'text-blue-400'}">
+                                ${isPos ? '+' : ''}${item.cant}mm
                             </span>
                         </div>
                     </div>
@@ -681,29 +639,27 @@
         }
 
         function clearHistory() {
-            if (confirm("저장된 최근 캔트 기록을 모두 삭제하시겠습니까?")) {
+            if (confirm("저장된 최근 기록을 모두 삭제하시겠습니까?")) {
                 state.savedHistory = [];
                 localStorage.removeItem(CONFIG.STORAGE_KEY_HISTORY);
                 renderHistory();
-                showToast("기록이 삭제되었습니다.");
+                showToast("이력이 삭제되었습니다.");
             }
         }
 
-        /* ================= ZERO CALIBRATION LOGIC ================= */
         function recordCalStep1() {
             state.calV1 = latestRawPitchRad;
             const deg = (state.calV1 * (180 / Math.PI)).toFixed(2);
             document.getElementById('v1Display').innerText = `V1 (정방향): ${deg}°`;
-            document.getElementById('cal1Status').innerText = "기록 완료";
-            document.getElementById('cal1Status').className = "text-[11px] text-green-400 font-bold";
+            document.getElementById('cal1Status').innerText = "완료";
+            document.getElementById('cal1Status').className = "text-xl text-green-400 font-bold";
 
-            // Enable Step 2
             const step2Box = document.getElementById('calStep2Box');
             step2Box.classList.remove('opacity-50');
             const btn2 = document.getElementById('btnCalStep2');
             btn2.disabled = false;
-            btn2.className = "w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition active:scale-98";
-            showToast("1단계 정방향 측정이 완료되었습니다.");
+            btn2.className = "w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xl transition active:scale-98";
+            showToast("1단계 정방향 완료");
         }
 
         function recordCalStep2() {
@@ -711,25 +667,22 @@
             state.calV2 = latestRawPitchRad;
             const deg = (state.calV2 * (180 / Math.PI)).toFixed(2);
             document.getElementById('v2Display').innerText = `V2 (역방향): ${deg}°`;
-            document.getElementById('cal2Status').innerText = "기록 완료";
-            document.getElementById('cal2Status').className = "text-[11px] text-green-400 font-bold";
+            document.getElementById('cal2Status').innerText = "완료";
+            document.getElementById('cal2Status').className = "text-xl text-green-400 font-bold";
 
-            // Calculate Zero Offset Bias: Offset = (V1 + V2) / 2
             const calculatedOffsetRad = (state.calV1 + state.calV2) / 2.0;
             state.zeroOffset = calculatedOffsetRad;
 
-            // Save to localStorage
             localStorage.setItem(CONFIG.STORAGE_KEY_OFFSET, state.zeroOffset.toString());
             updateOffsetUI();
 
-            // Render result
             const resultBox = document.getElementById('calResultBox');
             const resultText = document.getElementById('calResultText');
             resultBox.classList.remove('hidden');
 
             const offsetDeg = (calculatedOffsetRad * (180 / Math.PI)).toFixed(2);
             const offsetMm = (CONFIG.RAIL_GAUGE * Math.sin(calculatedOffsetRad)).toFixed(1);
-            resultText.innerText = `계산된 기울기 오프셋: ${offsetDeg}° (${offsetMm} mm). 향후 측정 시 자동 보정됩니다.`;
+            resultText.innerText = `계산된 기울기 오프셋: ${offsetDeg}° (${offsetMm}mm). 향후 자동 보정됩니다.`;
             showToast("영점 보정이 완료되었습니다!");
         }
 
@@ -748,13 +701,12 @@
 
             const btn2 = document.getElementById('btnCalStep2');
             btn2.disabled = true;
-            btn2.className = "w-full py-2.5 bg-gray-700 text-gray-400 font-bold rounded-lg text-xs transition";
+            btn2.className = "w-full py-3.5 bg-gray-700 text-gray-400 font-extrabold rounded-xl text-xl transition";
             document.getElementById('calStep2Box').classList.add('opacity-50');
 
             showToast("영점이 초기화되었습니다.");
         }
 
-        /* ================= FILTER & SIMULATOR CONTROLS ================= */
         function updateFilterConfig() {
             const winVal = parseInt(document.getElementById('inputWindowSize').value);
             const stdVal = parseFloat(document.getElementById('inputStdDev').value);
@@ -762,7 +714,7 @@
             state.windowSize = winVal;
             state.stdDevThreshold = stdVal;
 
-            document.getElementById('windowSizeVal').innerText = `${winVal}개 샘플 (~${(winVal * 0.033).toFixed(1)}초)`;
+            document.getElementById('windowSizeVal').innerText = `${winVal}개 (~${(winVal * 0.033).toFixed(1)}초)`;
             document.getElementById('stdDevThresholdVal').innerText = `${stdVal.toFixed(1)} mm`;
         }
 
@@ -771,10 +723,10 @@
             const controlBox = document.getElementById('simControlBox');
             if (state.simulatorActive) {
                 controlBox.classList.remove('hidden');
-                showToast("가상 센서 시뮬레이터가 시작되었습니다.");
+                showToast("가상 시뮬레이터 켜짐");
             } else {
                 controlBox.classList.add('hidden');
-                showToast("실제 센서 모드로 전환되었습니다.");
+                showToast("실제 센서 모드 전환");
             }
         }
 
@@ -784,7 +736,6 @@
             document.getElementById('simTargetVal').innerText = `${val >= 0 ? '+' : ''}${val.toFixed(1)} mm`;
         }
 
-        /* Utility Toast Notification */
         function showToast(msg) {
             const toast = document.getElementById('toast');
             if (!toast) return;
