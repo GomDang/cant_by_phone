@@ -2,8 +2,8 @@
 <html lang="ko" class="h-full dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cant_by_Phone v0.5.1 - 철도궤도 캔트 측정기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cant_by_Phone v0.6.0 - 철도궤도 캔트 측정기</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -33,6 +33,9 @@
             -webkit-user-select: none;
             background-color: #0d0e11;
             color: #e5e7eb;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
@@ -58,7 +61,7 @@
             <i class="fa-solid fa-train-subway text-green-400 text-xl"></i>
             <div>
                 <h1 class="font-extrabold text-base tracking-wide text-white leading-tight">Cant_by_Phone</h1>
-                <p class="text-[16px] text-gray-400 font-semibold">v0.5.1 (궤간 1,435mm)</p>
+                <p class="text-[16px] text-gray-400 font-semibold">v0.6.0 (궤간 1,435mm)</p>
             </div>
         </div>
         <div id="osBadge" class="hidden text-[16px] font-bold px-2.5 py-0.5 rounded bg-gray-800 text-gray-200 border border-gray-600">
@@ -424,7 +427,17 @@
             loadStoredSettings();
             renderHistory();
             startSensorPipeline();
+            lockScreenOrientation();
         });
+
+        /* Screen Orientation Lock API */
+        function lockScreenOrientation() {
+            if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                screen.orientation.lock('portrait-primary').catch((err) => {
+                    console.log("Orientation lock not allowed or supported by OS:", err);
+                });
+            }
+        }
 
         function loadStoredSettings() {
             const savedOffset = localStorage.getItem(CONFIG.STORAGE_KEY_OFFSET);
@@ -452,6 +465,7 @@
         }
 
         function navTo(screenId) {
+            lockScreenOrientation();
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3_calibration').classList.add('hidden');
@@ -466,6 +480,7 @@
 
         function initPlatform(osType) {
             state.os = osType;
+            lockScreenOrientation();
             const badge = document.getElementById('osBadge');
             const osIcon = document.getElementById('osIcon');
             const osText = document.getElementById('osText');
@@ -523,7 +538,6 @@
         function handleOrientationEvent(event) {
             if (state.simulatorActive) return;
             let pitchDeg = event.beta || 0; 
-            // Inverted sign to guarantee smartphone side higher = positive (+)
             latestRawPitchRad = -(pitchDeg * Math.PI) / 180.0;
         }
 
@@ -533,7 +547,6 @@
                 const ay = event.accelerationIncludingGravity.y || 0;
                 const ax = event.accelerationIncludingGravity.x || 0;
                 const az = event.accelerationIncludingGravity.z || 9.81;
-                // Inverted sign for acceleration vector calculation
                 const pitchRad = -Math.atan2(ay, Math.sqrt(ax * ax + az * az));
                 if (!isNaN(pitchRad)) {
                     latestRawPitchRad = pitchRad;
