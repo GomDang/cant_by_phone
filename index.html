@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cant_by_Phone v0.4.0 - 철도궤도 캔트 측정기</title>
+    <title>Cant_by_Phone v0.5.0 - 철도궤도 캔트 측정기</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -45,6 +45,9 @@
             background: #2e323d;
             border-radius: 3px;
         }
+        .swipe-item {
+            transition: transform 0.2s ease-out;
+        }
     </style>
 </head>
 <body class="h-full flex flex-col justify-between max-w-md mx-auto border-x border-railBorder shadow-2xl">
@@ -55,7 +58,7 @@
             <i class="fa-solid fa-train-subway text-green-400 text-xl"></i>
             <div>
                 <h1 class="font-extrabold text-base tracking-wide text-white leading-tight">Cant_by_Phone</h1>
-                <p class="text-[16px] text-gray-400 font-semibold">v0.4.0 (궤간 1,435mm)</p>
+                <p class="text-[16px] text-gray-400 font-semibold">v0.5.0 (궤간 1,435mm)</p>
             </div>
         </div>
         <div id="osBadge" class="hidden text-[16px] font-bold px-2.5 py-0.5 rounded bg-gray-800 text-gray-200 border border-gray-600">
@@ -366,18 +369,19 @@
                 </button>
             </div>
 
-            <!-- 최근 10개 데이터 기록 리스트 -->
+            <!-- 최근 30개 데이터 기록 리스트 -->
             <div class="bg-railCard p-4 rounded-xl border border-railBorder space-y-3">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                     <h3 class="text-base font-extrabold text-white flex items-center gap-2">
                         <i class="fa-solid fa-clock-rotate-left text-gray-400"></i>
-                        최근 저장 기록 (최대 10개)
+                        최근 저장 기록 (최대 30개)
                     </h3>
-                    <button onclick="clearHistory()" class="text-base text-gray-400 hover:text-red-400 underline">삭제</button>
+                    <button onclick="clearHistory()" class="text-base text-gray-400 hover:text-red-400 underline">전체삭제</button>
                 </div>
+                <p class="text-xs text-gray-500 text-right">※ 항목을 왼쪽으로 스와이프하면 삭제할 수 있습니다.</p>
 
                 <!-- 이력 항목 목록 -->
-                <div id="historyList" class="space-y-2">
+                <div id="historyList" class="space-y-2 relative overflow-hidden">
                     <p class="text-base text-gray-500 text-center py-4">저장된 측정 이력이 없습니다.</p>
                 </div>
             </div>
@@ -394,8 +398,9 @@
     <script>
         const CONFIG = {
             RAIL_GAUGE: 1435.0,
-            STORAGE_KEY_OFFSET: 'cant_zero_offset_v4',
-            STORAGE_KEY_HISTORY: 'cant_history_v4'
+            STORAGE_KEY_OFFSET: 'cant_zero_offset_v5',
+            STORAGE_KEY_HISTORY: 'cant_history_v5',
+            MAX_HISTORY: 30
         };
 
         let state = {
@@ -610,23 +615,38 @@
             }
         }
 
+        // 24-hour time format function (HH:mm:ss)
+        function get24HourTimeString() {
+            const d = new Date();
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mm = String(d.getMinutes()).padStart(2, '0');
+            const ss = String(d.getSeconds()).padStart(2, '0');
+            return `${hh}:${mm}:${ss}`;
+        }
+
         function saveCurrentCant() {
             const record = {
                 id: Date.now(),
-                timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                timestamp: get24HourTimeString(),
                 cant: state.currentFilteredCant.toFixed(1),
-                pitch: state.currentFilteredPitch.toFixed(2),
                 isStable: state.isStable
             };
 
             state.savedHistory.unshift(record);
-            if (state.savedHistory.length > 10) {
+            if (state.savedHistory.length > CONFIG.MAX_HISTORY) {
                 state.savedHistory.pop();
             }
 
             localStorage.setItem(CONFIG.STORAGE_KEY_HISTORY, JSON.stringify(state.savedHistory));
             renderHistory();
             showToast(`캔트값 ${record.cant}mm 저장 완료`);
+        }
+
+        function deleteHistoryItem(id) {
+            state.savedHistory = state.savedHistory.filter(item => item.id !== id);
+            localStorage.setItem(CONFIG.STORAGE_KEY_HISTORY, JSON.stringify(state.savedHistory));
+            renderHistory();
+            showToast("항목이 삭제되었습니다.");
         }
 
         function renderHistory() {
@@ -639,23 +659,102 @@
             }
 
             container.innerHTML = state.savedHistory.map((item, idx) => {
-                const opacity = (1.0 - (idx * 0.075)).toFixed(2);
                 const isPos = parseFloat(item.cant) >= 0;
                 return `
-                    <div style="opacity: ${opacity};" class="bg-gray-900 p-2.5 rounded-lg border border-gray-800 flex items-center justify-between text-base">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded font-mono">#${idx + 1}</span>
-                            <span class="text-gray-300 font-mono text-base">${item.timestamp}</span>
+                    <div class="relative overflow-hidden rounded-lg border border-gray-800 bg-gray-900 group">
+                        <!-- Delete action background button -->
+                        <div class="absolute inset-y-0 right-0 w-20 bg-red-600 flex items-center justify-center text-white font-bold text-base cursor-pointer z-0"
+                             onclick="deleteHistoryItem(${item.id})">
+                             <i class="fa-solid fa-trash mr-1"></i> 삭제
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="text-gray-400 text-base">${item.pitch}°</span>
-                            <span class="font-mono font-black text-lg ${isPos ? 'text-amber-400' : 'text-blue-400'}">
-                                ${isPos ? '+' : ''}${item.cant}mm
-                            </span>
+                        
+                        <!-- Swipe Foreground Item (Time + Cant value only) -->
+                        <div id="swipe-item-${item.id}" 
+                             class="swipe-item relative z-10 bg-gray-900 p-3 flex items-center justify-between text-base"
+                             ontouchstart="handleTouchStart(event, ${item.id})"
+                             ontouchmove="handleTouchMove(event, ${item.id})"
+                             ontouchend="handleTouchEnd(event, ${item.id})"
+                             onmousedown="handleMouseDown(event, ${item.id})">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-base font-mono bg-gray-800 text-gray-400 px-2 py-0.5 rounded">#${idx + 1}</span>
+                                <span class="text-gray-300 font-mono text-base font-bold">${item.timestamp}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono font-black text-xl ${isPos ? 'text-amber-400' : 'text-blue-400'}">
+                                    ${isPos ? '+' : ''}${item.cant} mm
+                                </span>
+                                <i class="fa-solid fa-chevron-left text-xs text-gray-600 ml-1"></i>
+                            </div>
                         </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        /* Swipe Action Gesture Logic */
+        let touchStartX = 0;
+        let currentTouchX = 0;
+        let activeSwipeId = null;
+
+        function handleTouchStart(e, id) {
+            touchStartX = e.touches[0].clientX;
+            activeSwipeId = id;
+        }
+
+        function handleTouchMove(e, id) {
+            if (activeSwipeId !== id) return;
+            currentTouchX = e.touches[0].clientX;
+            const diffX = currentTouchX - touchStartX;
+            const itemEl = document.getElementById(`swipe-item-${id}`);
+            if (diffX < 0 && diffX > -100) {
+                itemEl.style.transform = `translateX(${diffX}px)`;
+            }
+        }
+
+        function handleTouchEnd(e, id) {
+            if (activeSwipeId !== id) return;
+            const diffX = currentTouchX - touchStartX;
+            const itemEl = document.getElementById(`swipe-item-${id}`);
+            if (diffX < -40) {
+                itemEl.style.transform = `translateX(-80px)`;
+            } else {
+                itemEl.style.transform = `translateX(0px)`;
+            }
+            touchStartX = 0;
+            currentTouchX = 0;
+        }
+
+        // Mouse Drag Support for PC Testing
+        let isMouseDown = false;
+        function handleMouseDown(e, id) {
+            isMouseDown = true;
+            touchStartX = e.clientX;
+            activeSwipeId = id;
+
+            const onMouseMove = (moveEvent) => {
+                if (!isMouseDown || activeSwipeId !== id) return;
+                const diffX = moveEvent.clientX - touchStartX;
+                const itemEl = document.getElementById(`swipe-item-${id}`);
+                if (diffX < 0 && diffX > -100) {
+                    itemEl.style.transform = `translateX(${diffX}px)`;
+                }
+            };
+
+            const onMouseUp = (upEvent) => {
+                if (!isMouseDown) return;
+                const diffX = upEvent.clientX - touchStartX;
+                const itemEl = document.getElementById(`swipe-item-${id}`);
+                if (itemEl) {
+                    if (diffX < -40) itemEl.style.transform = `translateX(-80px)`;
+                    else itemEl.style.transform = `translateX(0px)`;
+                }
+                isMouseDown = false;
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+            };
+
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
         }
 
         function clearHistory() {
@@ -663,7 +762,7 @@
                 state.savedHistory = [];
                 localStorage.removeItem(CONFIG.STORAGE_KEY_HISTORY);
                 renderHistory();
-                showToast("이력이 삭제되었습니다.");
+                showToast("이력이 모두 삭제되었습니다.");
             }
         }
 
