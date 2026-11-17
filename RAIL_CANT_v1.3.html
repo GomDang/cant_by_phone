@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1118">
+<title>RAIL CANT v1.3 — 캔트 측정</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1118;--panel:#121c27;--panel2:#172432;--line:#263747;--muted:#a7b7c6;--text:#edf4fa;--accent:#64d6b0;--blue:#70b7ff;--warn:#ffbf69;--bad:#ff7777;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#1b3040 0%,var(--bg) 55%);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#1a2a38;color:var(--text);border-radius:13px;padding:13px 16px;font-weight:650;min-height:46px}button:disabled{opacity:.4;cursor:not-allowed}.primary{background:var(--accent);color:#071711;border:0}.secondary{background:#1a2a38}.ghost{background:transparent}.danger{color:var(--bad);border-color:#633b43}
+.app{max-width:780px;margin:auto;padding:18px 16px calc(36px + env(safe-area-inset-bottom))}.top{display:flex;align-items:center;justify-content:space-between;margin:4px 0 24px}.brand{font-size:13px;letter-spacing:.2em;color:var(--accent);font-weight:800}.version{font-size:13px;color:var(--muted);border:1px solid var(--line);padding:5px 9px;border-radius:99px}
+h1{font-size:clamp(28px,6vw,42px);line-height:1.12;letter-spacing:-.04em;margin:8px 0 10px}h2{font-size:22px;margin:0 0 8px;letter-spacing:-.03em}h3{font-size:17px;margin:0 0 8px}.sub{color:var(--muted);margin:0 0 24px}.screen{display:none;animation:appear .2s ease}.screen.active{display:block}@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.panel{background:linear-gradient(145deg,#172432,#101923);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:14px 0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.choice{min-height:112px;text-align:left;padding:18px}.choice strong{display:block;font-size:19px;margin:7px 0}.choice small{color:var(--muted);font-weight:400;font-size:13px}.choice.selected{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#142a2a}
+.kicker{color:var(--accent);font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.steps{display:flex;gap:6px;margin:18px 0}.steps i{height:5px;flex:1;border-radius:5px;background:#293947}.steps i.done{background:var(--accent)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.actions button{flex:1}.note{font-size:13px;color:var(--muted)}.callout{border-left:3px solid var(--warn);padding:11px 13px;background:#29251d;border-radius:0 10px 10px 0;color:#f0dfc5;font-size:13px;margin:14px 0}.callout.bad{border-color:var(--bad);background:#2b1c22;color:#ffdadd}.callout.good{border-color:var(--accent);background:#142a28;color:#d7fff0}
+.mount{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.mount div{background:#0d151e;border:1px solid var(--line);border-radius:12px;padding:12px}.mount b{display:block;font-size:13px}.mount span{color:var(--muted);font-size:13px}
+.diagram{height:142px;border:1px solid var(--line);border-radius:14px;background:#0d151e;position:relative;overflow:hidden;margin:14px 0}.diagram .bar{position:absolute;left:8%;right:8%;height:9px;background:#8093a4;top:83px;border-radius:5px}.diagram .phone{position:absolute;left:69%;top:61px;width:96px;height:50px;border:3px solid var(--accent);border-radius:13px;background:#17332f}.diagram .port{position:absolute;left:calc(69% + 94px);top:78px;width:7px;height:15px;background:var(--accent);border-radius:0 4px 4px 0}.diagram .bubble{position:absolute;left:8%;top:20px;color:var(--muted);font-size:13px}.diagram .caption{position:absolute;right:8%;bottom:12px;color:var(--accent);font-size:13px}
+.measure-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.status{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:99px;padding:7px 11px;font-size:13px;color:var(--muted);white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}.status.stable{color:var(--accent);border-color:#326d5b}.status.stable .dot{background:var(--accent)}.status.bad{color:var(--bad);border-color:#633b43}.status.bad .dot{background:var(--bad)}
+.readout{margin:16px 0;padding:24px 18px;border-radius:20px;background:linear-gradient(145deg,#102a2b,#10202a);border:1px solid #28534d;text-align:center;transition:.2s;cursor:pointer;user-select:none}.readout.unstable{background:#17232b;border-color:#344754;opacity:1;cursor:not-allowed}.readout.holding{border-color:#8b7040;background:linear-gradient(145deg,#282419,#17202a)}.readout .label{color:#b4c9c4;font-size:13px;letter-spacing:.12em}.value{font-size:clamp(58px,15vw,90px);font-weight:800;letter-spacing:-.07em;line-height:1.12;font-variant-numeric:tabular-nums;margin:7px 0}.unit{font-size:20px;color:#b4c9c4;letter-spacing:0}.direction{font-size:15px;color:#c1e4d9}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#0e1720;border:1px solid var(--line);border-radius:13px;padding:12px}.metric span{display:block;color:var(--muted);font-size:13px}.metric b{font-size:19px;font-variant-numeric:tabular-nums}.record-btn{width:100%;font-size:17px;padding:17px;margin-top:14px}.record-btn.saved{animation:pulse .35s ease}@keyframes pulse{50%{transform:scale(1.025)}}
+.list{display:flex;flex-direction:column;gap:8px}.record{display:flex;justify-content:space-between;align-items:center;background:#0e1720;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.record b{font-variant-numeric:tabular-nums}.record small{display:block;color:var(--muted);font-size:13px}.empty{color:var(--muted);font-size:13px;text-align:center;padding:18px}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}input,select{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:#0c151e;color:var(--text);min-height:46px}input[type=range]{padding:0;accent-color:var(--accent)}.setting-row{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:9px 0}.setting-row b{text-align:right;font-size:13px}
+.nav{display:flex;gap:8px;margin:18px 0}.nav button{flex:1;font-size:13px;padding:10px}.nav button.active{border-color:var(--accent);color:var(--accent)}.footer{color:#91a3b5;font-size:13px;text-align:center;margin:30px 0 8px}
+.toast{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#d8fff0;color:#092019;padding:11px 18px;border-radius:99px;font-weight:750;transition:.25s;z-index:10;white-space:nowrap;font-size:13px}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:430px){.app{padding:14px 12px 30px}.panel{padding:15px}.grid2{gap:9px}.choice{padding:14px;min-height:105px}.metrics{gap:8px}.metric{padding:10px}.value{font-size:66px}.mount{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand">RAIL / CANT</div><div class="version">FIELD PROTOTYPE · 1.3</div></header>
+
+<section id="welcome" class="screen active">
+ <div class="kicker">Track measurement system</div><h1>캔트 측정의<br>새로운 기준을 시험합니다.</h1>
+ <p class="sub">스마트폰 관성 센서를 이용한 철도 레일 높이 차이 측정 프로토타입</p>
+ <h3>01 / 스마트폰 종류를 선택하세요</h3>
+ <div class="grid2">
+  <button class="choice" data-device="iPhone"><span></span><strong>iPhone</strong><small>iOS · Safari 권장</small></button>
+  <button class="choice" data-device="Android"><span>◈</span><strong>Android</strong><small>Chrome 권장</small></button>
+ </div>
+ <div class="panel"><div class="kicker">Mounting reference</div>
+  <div class="diagram"><div class="bubble">화면은 하늘 방향</div><div class="bar"></div><div class="phone"></div><div class="port"></div><div class="caption">USB-C → 막대 끝 방향</div></div>
+  <div class="mount"><div><b>스마트폰 긴 변</b><span>수평계 막대 길이 방향과 평행</span></div><div><b>스마트폰 화면</b><span>위쪽 / 하늘 방향</span></div><div><b>USB-C 포트</b><span>수평계 막대의 끝 방향</span></div><div><b>거치대 위치</b><span>수평계의 한쪽 끝</span></div></div>
+  <p class="note">스마트폰과 수평계가 하나의 강체처럼 움직이도록 단단히 고정하세요. 센서 축과 부호는 이 장착 방향에서 실측으로 확인합니다.</p>
+ </div>
+ <button id="toMode" class="primary" style="width:100%" disabled>다음 단계 →</button>
+</section>
+
+<section id="mode" class="screen">
+ <div class="kicker">02 / Measurement setup</div><h1>어떤 작업을<br>시작할까요?</h1><p class="sub">저장된 캘리브레이션을 확인하거나 새로 설정합니다.</p>
+ <div class="grid2">
+  <button class="choice" id="chooseCal"><span>◎</span><strong>캘리브레이션</strong><small>제로설정 + 스케일설정 + 반전 검증</small></button>
+  <button class="choice" id="chooseMeasure"><span>↗</span><strong>바로 측정</strong><small>저장된 보정값 사용 및 실행 전 점검</small></button>
+ </div>
+ <div class="callout">캘리브레이션은 기준 수평면과 20mm 기준 블록이 있을 때 수행합니다. 일반 선로 위에서 임의로 영점을 다시 설정하면 실제 선로 캔트가 0으로 처리될 수 있습니다.</div>
+ <div class="actions"><button class="ghost" data-back="welcome">이전</button></div>
+</section>
+
+<section id="startupCheck" class="screen">
+ <div class="kicker">Startup verification</div><h1>저장된 보정값을<br>확인합니다.</h1>
+ <div class="panel">
+  <h3>기준 수평면에서 확인할 수 있나요?</h3>
+  <p class="note">저장된 영점과 현재 센서값을 비교하려면 수평계 전체를 검증된 수평 기준면에 올려야 합니다. 실제 선로 위에서는 선로 캔트가 포함되므로 영점 비교를 할 수 없습니다.</p>
+  <div class="actions"><button id="knownLevel" class="primary">예, 기준 수평면이 있습니다</button><button id="noKnownLevel" class="secondary">아니요, 지금은 없습니다</button></div>
+ </div>
+ <div class="callout">스마트폰이 수평계에서 분리·재장착되었거나 거치대가 움직였다면 기준 수평면에서 영점 확인 또는 전체 캘리브레이션을 수행하세요.</div>
+ <div class="actions"><button class="ghost" data-back="mode">이전</button></div>
+</section>
+
+<section id="zeroCheck" class="screen">
+ <div class="kicker">Saved zero check</div><h1>영점 상태 확인</h1>
+ <p class="sub">수평계를 검증된 수평 기준면에 놓고 기포를 중앙에 맞춘 뒤 측정하세요.</p>
+ <div class="panel">
+  <div id="zeroCheckStatus" class="status"><i class="dot"></i><span>센서값 수집 중</span></div>
+  <div id="zeroCheckLive" style="font-size:28px;font-weight:800;margin:12px 0">— °</div>
+  <p class="note" id="zeroCheckDetail">안정된 센서값을 수집하고 있습니다.</p>
+  <div class="actions"><button id="runZeroCheck" class="primary">현재 기준면으로 확인</button><button id="redoCalibrationFromCheck" class="secondary">전체 캘리브레이션</button></div>
+ </div>
+ <div id="zeroCheckResult" class="callout">영점 확인 전에는 결과가 표시되지 않습니다.</div>
+ <div class="actions"><button id="continueAfterZeroCheck" class="primary" disabled>측정 화면으로</button></div>
+</section>
+
+<section id="guide" class="screen">
+ <div class="kicker">Measurement guide</div><h1>측정 전 확인사항</h1><p class="sub">현장 측정 전 장착 상태와 부호 기준을 확인하세요.</p>
+ <div class="panel"><h3>01. 수평계를 양쪽 레일에 올려놓기</h3><p class="note">양쪽 접촉점이 안정적으로 닿고 수평계가 흔들리지 않는지 확인합니다.</p></div>
+ <div class="panel"><h3>02. 센서값이 안정될 때까지 대기</h3><p class="note">장비를 놓는 순간의 충격과 주변 진동이 가라앉은 뒤 측정합니다.</p></div>
+ <div class="panel"><h3>03. 안정된 캔트값을 터치해 기록</h3><p class="note">불안정 상태에서는 기록할 수 없습니다. 불안정 중에도 마지막 안정값은 유지 표시합니다.</p></div>
+ <div class="panel"><div class="kicker">Sign convention</div><div class="grid2"><div><div style="font-size:32px;color:var(--accent);font-weight:800">＋</div><b>스마트폰 쪽 레일이 높음</b></div><div><div style="font-size:32px;color:var(--warn);font-weight:800">－</div><b>반대쪽 레일이 높음</b></div></div></div>
+ <div class="actions"><button class="ghost" data-back="mode">이전</button><button id="startWork" class="primary">센서 연결 및 시작 →</button></div>
+</section>
+
+<section id="calibration" class="screen">
+ <div class="kicker">Calibration · Zero setting</div><h1>제로설정</h1><p class="sub">검증된 수평 기준면과 기포관을 이용해 측정 기준각을 저장합니다.</p>
+ <div class="steps"><i id="z1"></i><i id="z2"></i><i id="z3"></i><i id="z4"></i></div>
+ <div class="panel"><div class="kicker" id="zeroStep">ZERO · STEP 01</div><h2 id="zeroTitle">측정 장비 준비</h2><p id="zeroDesc" class="sub" style="margin:8px 0 0"></p>
+  <div id="zeroStatus" class="status" style="margin-top:16px"><i class="dot"></i><span>센서 연결 전</span></div><div id="zeroLive" class="note" style="margin-top:10px">센서값 수집 대기</div>
+ </div>
+ <div class="actions"><button class="ghost" id="zeroCancel">취소</button><button id="zeroNext" class="primary">다음 단계</button></div>
+</section>
+
+<section id="scaleCalibration" class="screen">
+ <div class="kicker">Calibration · Scale setting</div><h1>스케일설정</h1><p class="sub">20mm 기준 블록으로 각도-캔트 환산 배율을 설정합니다.</p>
+ <div class="steps"><i id="sc1"></i><i id="sc2"></i><i id="sc3"></i></div>
+ <div class="panel"><div class="kicker" id="scaleStep">SCALE · STEP 01</div><h2 id="scaleTitle">기준 블록 설치</h2><p id="scaleDesc" class="sub" style="margin:8px 0 0"></p>
+  <div id="scaleStatus" class="status" style="margin-top:16px"><i class="dot"></i><span>측정 대기</span></div>
+  <div id="scaleLive" class="note" style="margin-top:10px">센서값 수집 대기</div>
+  <div id="scaleResult" class="callout">기준 블록을 설치한 뒤 안정된 값을 취득합니다.</div>
+ </div>
+ <div class="actions"><button class="ghost" id="scaleCancel">취소</button><button id="scaleNext" class="primary">다음 단계</button></div>
+</section>
+
+<section id="reverseCheck" class="screen">
+ <div class="kicker">Calibration · Reverse verification</div><h1>좌우 반전 검증</h1>
+ <p class="sub">스마트폰과 수평계의 장착 방향은 유지하고, 20mm 블록만 반대쪽 레일 지지점으로 옮깁니다.</p>
+ <div class="panel">
+  <div class="metrics">
+   <div class="metric"><span>A 방향 기준 측정</span><b id="reverseA">— mm</b></div>
+   <div class="metric"><span>B 방향 반전 측정</span><b id="reverseB">— mm</b></div>
+   <div class="metric"><span>대칭 오차</span><b id="symmetryError">— mm</b></div>
+   <div class="metric"><span>영점 중심 편차</span><b id="centerError">— mm</b></div>
+  </div>
+  <div id="reverseStatus" class="status" style="margin-top:14px"><i class="dot"></i><span>검증 준비</span></div>
+  <p id="reverseInstruction" class="note">A 방향 측정이 저장되어 있습니다. 블록을 반대쪽 지지점으로 옮긴 후 측정하세요.</p>
+  <div class="actions"><button id="captureReverse" class="primary">B 방향 측정 취득</button><button id="retryReverse" class="secondary">검증 다시 시작</button></div>
+  <div id="reverseResult" class="callout">좌우 반전 검증 결과가 여기에 표시됩니다.</div>
+ </div>
+ <div class="actions"><button id="reverseCancel" class="ghost">캘리브레이션 취소</button><button id="finishCalibration" class="primary" disabled>캘리브레이션 완료</button></div>
+</section>
+
+<section id="measure" class="screen">
+ <div class="measure-head"><div><div class="kicker">Live measurement</div><h2>실시간 캔트</h2></div><div id="status" class="status"><i class="dot"></i><span>측정 준비 중</span></div></div>
+ <div id="readout" class="readout unstable" role="button" aria-label="안정된 측정값 저장" aria-disabled="true">
+  <div class="label">CURRENT CANT</div><div class="value" id="cant">—<span class="unit"> mm</span></div><div class="direction" id="direction">센서값 수집 중</div>
+ </div>
+ <div class="metrics">
+  <div class="metric"><span>기울기 각도</span><b id="angle">— °</b></div><div class="metric"><span>유효 측정 간격</span><b id="gaugeView">1,435 mm</b></div>
+  <div class="metric"><span>직전 기록</span><b id="lastValue">—</b></div><div class="metric"><span>현재 변화</span><b id="delta">—</b></div>
+ </div>
+ <button id="save" class="primary record-btn" disabled>현재 값 기록하기</button>
+ <p class="note" id="sensorHint" style="text-align:center;margin:9px 0">센서값이 안정되면 기록할 수 있습니다.</p>
+ <div class="panel"><div class="measure-head"><h3>최근 측정 기록 · 10개</h3><button class="ghost" id="clearRecords">초기화</button></div><div id="records" class="list"><div class="empty">아직 저장된 기록이 없습니다.</div></div></div>
+ <div class="nav"><button class="active" data-tab="measure">측정</button><button data-tab="settings">설정</button><button data-tab="diagnostics">센서 진단</button></div>
+</section>
+
+<section id="settings" class="screen">
+ <div class="kicker">Configuration</div><h1>측정 설정</h1><p class="sub">캔트 환산은 유효 레일 접촉점 간격을 사용합니다.</p>
+ <div class="panel">
+  <label for="gauge">유효 레일 접촉점 간격 (mm)</label><input id="gauge" type="number" min="100" max="2000" step="1" value="1435">
+  <p class="note">초기값 1,435mm. 수평계 전체 길이 약 1,500mm와 구분합니다. 실제 두 레일 접촉점 간 거리를 확인하세요.</p>
+  <label for="filter">필터 반응 속도</label><select id="filter"><option value="1000">1초 · 빠른 반응</option><option value="2000">2초 · 보통</option><option value="3000" selected>3초 · 느린 반응</option><option value="5000">5초 · 매우 느린 반응</option><option value="8000">8초 · 가장 느린 반응</option></select>
+  <p class="note">필터는 흔들림을 완화하지만 실제 변화 반영을 늦출 수 있습니다.</p>
+  <label for="sensitivity">안정 판정 기준 <span id="sensText">보통</span></label><input id="sensitivity" type="range" min="1" max="3" value="2">
+  <label for="axis">캔트 측정 축</label><select id="axis"><option value="x">X축</option><option value="y">Y축</option></select>
+  <label for="sign">부호 변환</label><select id="sign"><option value="1">현재 축 방향 그대로</option><option value="-1">부호 반전</option></select>
+  <div class="callout">축과 부호는 스마트폰 화면이 위쪽, USB-C 포트가 막대 끝 방향인 장착 상태에서 실측 검증합니다.</div>
+  <div class="setting-row"><span>저장된 영점 오프셋</span><b id="savedZero">—</b></div>
+  <div class="setting-row"><span>스케일 보정계수</span><b id="savedScale">—</b></div>
+  <div class="setting-row"><span>최근 검증 상태</span><b id="savedCalStatus">—</b></div>
+  <div class="actions"><button id="saveSettings" class="primary">설정 저장</button><button id="redoCalibration" class="secondary">전체 캘리브레이션</button></div>
+ </div>
+ <div class="actions"><button class="ghost" data-tab="measure">측정 화면으로</button></div>
+</section>
+
+<section id="diagnostics" class="screen">
+ <div class="kicker">Sensor diagnostics</div><h1>센서 진단</h1><p class="sub">센서 이벤트 수신 여부와 원시 데이터를 확인합니다.</p>
+ <div class="panel">
+  <div class="setting-row"><span>센서 API 지원</span><b id="apiSupport">확인 중</b></div><div class="setting-row"><span>이벤트 수신</span><b id="eventState">대기</b></div>
+  <div class="setting-row"><span>최근 이벤트 간격</span><b id="interval">—</b></div><div class="setting-row"><span>X / Y / Z 원시값</span><b id="rawXYZ">—</b></div>
+  <div class="setting-row"><span>계산 축 각도</span><b id="rawAxis">—</b></div><div class="setting-row"><span>샘플 수</span><b id="sampleCount">0</b></div>
+  <div class="setting-row"><span>선택 기기</span><b id="deviceView">—</b></div>
+ </div>
+ <div class="callout">가속도계는 중력뿐 아니라 선형 가속도도 감지합니다. 이동평균만으로 저주파 움직임과 실제 기울기를 완전히 분리할 수 없습니다.</div>
+ <div class="actions"><button class="ghost" data-tab="measure">측정 화면으로</button></div>
+</section>
+
+<div class="footer">RAIL CANT · Prototype only · 현장 사용 전 기준 장비와 비교 검증 필요</div>
+</div>
+<div id="toast" class="toast">저장되었습니다</div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), KEY='railCantPrototypeV13';
+const ZERO_LIMIT=.02, ZERO_WARN=.05, SYM_PASS=.30, SYM_LIMIT=.50, MAX_RETRIES=3;
+const state={device:null,screen:'welcome',sensor:false,raw:null,filtered:null,zero:null,scale:1,gauge:1435,filterMs:3000,axis:'x',sign:1,sensitivity:2,configId:null,samples:[],records:[],lastTs:0,interval:0,count:0,stable:false,displayCant:null,displayAngle:null,hasStableDisplay:false,zeroStep:1,scaleStep:1,scaleA:null,reverseAttempts:0,calibrated:false,calibrationAt:null,zeroCheckDone:false,mode:'measure'};
+const configId=()=>[state.device,state.axis,state.sign,state.gauge].join('|');
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'{}');Object.assign(state,{zero:d.zero??null,scale:d.scale??1,records:Array.isArray(d.records)?d.records.slice(0,10):[],gauge:d.gauge||1435,filterMs:([1000,2000,3000,5000,8000].includes(d.filterMs)?d.filterMs:3000),axis:d.axis||'x',sign:d.sign??1,sensitivity:d.sensitivity||2,device:d.device||null,configId:d.configId||null,calibrated:!!d.calibrated,calibrationAt:d.calibrationAt||null});}catch(e){}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({zero:state.zero,scale:state.scale,records:state.records,gauge:state.gauge,filterMs:state.filterMs,axis:state.axis,sign:state.sign,sensitivity:state.sensitivity,device:state.device,configId:state.configId,calibrated:state.calibrated,calibrationAt:state.calibrationAt}));}catch(e){toast('브라우저 저장소에 저장하지 못했습니다');}}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800);}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));state.screen=id;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));if(id==='settings')syncSettings();if(id==='diagnostics')syncDiag();}
+function syncSettings(){$('gauge').value=state.gauge;$('filter').value=state.filterMs;$('axis').value=state.axis;$('sign').value=state.sign;$('sensitivity').value=state.sensitivity;$('sensText').textContent=['','엄격','보통','완화'][state.sensitivity];$('savedZero').textContent=state.zero===null?'없음':state.zero.toFixed(4)+'°';$('savedScale').textContent=state.scale.toFixed(5);$('savedCalStatus').textContent=state.calibrated?'완료':'미완료';}
+function syncDiag(){$('apiSupport').textContent=('DeviceMotionEvent'in window)?'API 존재':'미지원';$('eventState').textContent=state.sensor?'수신 중':'대기';$('interval').textContent=state.interval?state.interval.toFixed(0)+' ms':'—';$('deviceView').textContent=state.device||'—';}
+function setStatus(kind,msg){const el=$('status');el.className='status '+(kind==='stable'?'stable':kind==='bad'?'bad':'');el.innerHTML='<i class="dot"></i><span>'+msg+'</span>';$('readout').classList.toggle('unstable',kind!=='stable');}
+function angleFrom(e){const a=e.accelerationIncludingGravity;if(!a)return null;const v=state.axis==='x'?(a.x??0):(a.y??0),z=a.z??0;if(!Number.isFinite(v)||!Number.isFinite(z)||Math.hypot(v,z)<1)return null;return Math.atan2(v,z)*180/Math.PI*state.sign;}
+function onMotion(e){
+ const now=performance.now(),a=e.accelerationIncludingGravity;if(!a)return;state.sensor=true;state.count++;if(state.lastTs)state.interval=now-state.lastTs;state.lastTs=now;
+ const raw=angleFrom(e);if(raw===null)return;state.raw=raw;state.samples.push({t:now,v:raw});const keep=Math.max(10000,state.filterMs+3000);while(state.samples.length&&state.samples[0].t<now-keep)state.samples.shift();
+ const fs=state.samples.filter(x=>x.t>=now-state.filterMs);if(!fs.length)return;state.filtered=fs.reduce((s,x)=>s+x.v,0)/fs.length;
+ const win=state.samples.filter(x=>x.t>=now-2000),vals=win.map((x,i)=>{const arr=state.samples.filter(y=>y.t>=x.t-state.filterMs&&y.t<=x.t);return arr.reduce((s,y)=>s+y.v,0)/Math.max(1,arr.length)}),mean=vals.reduce((s,v)=>s+v,0)/Math.max(1,vals.length),sd=Math.sqrt(vals.reduce((s,v)=>s+(v-mean)**2,0)/Math.max(1,vals.length)),range=vals.length?Math.max(...vals)-Math.min(...vals):999;
+ const lim={1:{sd:.018,range:.075},2:{sd:.028,range:.11},3:{sd:.045,range:.18}}[state.sensitivity];state.stable=win.length>=12&&win[win.length-1].t-win[0].t>=1500&&sd<=lim.sd&&range<=lim.range;
+ const corrected=state.filtered-(state.zero??0);state.angle=corrected;state.cant=state.gauge*Math.tan(corrected*Math.PI/180)*state.scale;
+ if(state.stable){state.displayCant=Math.round(state.cant*2)/2;state.displayAngle=Math.atan((state.displayCant/state.scale)/state.gauge)*180/Math.PI;state.hasStableDisplay=true;}
+ updateMeasure();$('eventState').textContent='수신 중';$('interval').textContent=state.interval.toFixed(0)+' ms';$('rawXYZ').textContent=[a.x,a.y,a.z].map(v=>Number(v??0).toFixed(2)).join(' / ');$('rawAxis').textContent=raw.toFixed(4)+'°';$('sampleCount').textContent=state.count;
+ updateCalibrationLive();
+}
+function updateMeasure(){const has=state.hasStableDisplay&&Number.isFinite(state.displayCant),valid=state.stable&&has,shown=has?state.displayCant:null;$('cant').innerHTML=(has?(shown>=0?'+':'')+shown.toFixed(1):'—')+'<span class="unit"> mm</span>';$('angle').textContent=has?((state.displayAngle>=0?'+':'')+state.displayAngle.toFixed(3)+' °'):'— °';$('direction').textContent=valid?(Math.abs(shown)<.05?'좌우 레일 높이 차이 거의 없음':shown>0?'스마트폰 쪽 레일이 높음':'반대쪽 레일이 높음'):has?'불안정 · 마지막 안정값 유지':'센서값 수집 중';$('gaugeView').textContent=state.gauge.toLocaleString()+' mm';const last=state.records[0];$('lastValue').textContent=last?(last.cant>=0?'+':'')+last.cant.toFixed(1)+' mm':'—';$('delta').textContent=last&&has?((shown-last.cant)>=0?'+':'')+(shown-last.cant).toFixed(1)+' mm':'—';$('save').disabled=!valid;$('readout').setAttribute('aria-disabled',String(!valid));$('readout').classList.toggle('holding',has&&!valid);setStatus(valid?'stable':state.sensor?'bad':'',valid?'값이 안정되었습니다':has?'값 유지 · 재안정화 중':state.sensor?'값이 불안정합니다':'측정 준비 중');$('sensorHint').textContent=valid?'화면 또는 기록 버튼을 터치하면 저장됩니다.':has?'마지막 안정값을 표시 중입니다. 새 값이 안정되면 갱신됩니다.':'안정된 측정값을 기다리는 중입니다.';}
+function renderRecords(){const box=$('records');if(!state.records.length){box.innerHTML='<div class="empty">아직 저장된 기록이 없습니다.</div>';return;}box.innerHTML=state.records.map((r,i)=>`<div class="record"><div><small>${String(i+1).padStart(2,'0')} · ${new Date(r.time).toLocaleString('ko-KR')}</small><b>${r.cant>=0?'+':''}${r.cant.toFixed(1)} mm</b></div><span class="note">${r.angle.toFixed(3)}°</span></div>`).join('');}
+function saveRecord(){if(!state.stable||!Number.isFinite(state.cant))return;state.records.unshift({time:Date.now(),cant:state.displayCant,angle:state.displayAngle,gauge:state.gauge,zero:state.zero,scale:state.scale,filterMs:state.filterMs});state.records=state.records.slice(0,10);persist();renderRecords();$('save').classList.remove('saved');void $('save').offsetWidth;$('save').classList.add('saved');toast('✓ 측정값이 저장되었습니다');}
+async function startSensor(){if(!('DeviceMotionEvent'in window)){toast('이 브라우저는 모션 센서를 지원하지 않습니다');return false;}try{if(typeof DeviceMotionEvent.requestPermission==='function'){const p=await DeviceMotionEvent.requestPermission();if(p!=='granted'){toast('모션 센서 권한이 필요합니다');return false;}}window.removeEventListener('devicemotion',onMotion);window.addEventListener('devicemotion',onMotion,{passive:true});state.sensor=true;$('apiSupport').textContent='API 사용 가능';return true;}catch(e){toast('센서 권한 요청 실패 · HTTPS 환경인지 확인하세요');return false;}}
+function stableRaw(){return state.stable&&Number.isFinite(state.filtered)?state.filtered:null;}
+const zeroSteps=[
+ ['장비 준비','수평계를 검증된 수평 기준면에 올려놓으세요. 스마트폰 화면은 위쪽, USB-C 포트는 막대 끝 방향이며 거치대가 단단히 고정되어야 합니다.'],
+ ['기포관 수평 맞추기','기포가 중앙에 오도록 수평계 또는 기준면을 조정하세요. 실제 선로 위에서 임의로 영점을 설정하지 마세요.'],
+ ['센서 안정 확인','장비를 움직이지 말고 센서값이 안정될 때까지 기다리세요. 안정 상태가 약 1.5초 이상 유지되어야 합니다.'],
+ ['제로값 저장','현재 안정된 센서각을 기준 영점으로 저장합니다. 이후 캔트 계산은 현재 각도에서 이 값을 뺀 값을 사용합니다.']
+];
+function setZeroStep(n){state.zeroStep=n;['z1','z2','z3','z4'].forEach((id,i)=>$(id).classList.toggle('done',i<n));const d=zeroSteps[n-1];$('zeroStep').textContent=`ZERO · STEP 0${n}`;$('zeroTitle').textContent=d[0];$('zeroDesc').textContent=d[1];$('zeroNext').textContent=n===4?'제로값 저장':'다음 단계';$('zeroNext').disabled=n===3&&!state.stable;updateCalibrationLive();}
+function beginCalibration(){state.zeroStep=1;state.scaleStep=1;state.scaleA=null;state.reverseAttempts=0;state.calibrated=false;setZeroStep(1);show('calibration');}
+function updateCalibrationLive(){if(state.screen==='calibration'){$('zeroStatus').className='status '+(state.stable?'stable':state.sensor?'bad':'');$('zeroStatus').innerHTML='<i class="dot"></i><span>'+(state.stable?'값이 안정되었습니다':state.sensor?'값이 불안정합니다':'센서값 수집 중')+'</span>';$('zeroLive').textContent=state.filtered===null?'센서값 대기':`현재 센서각 ${state.filtered.toFixed(4)}° · ${state.count} samples`;$('zeroNext').disabled=state.zeroStep===3&&!state.stable;}if(state.screen==='scaleCalibration'){$('scaleStatus').className='status '+(state.stable?'stable':state.sensor?'bad':'');$('scaleStatus').innerHTML='<i class="dot"></i><span>'+(state.stable?'값이 안정되었습니다':state.sensor?'값이 불안정합니다':'센서값 수집 중')+'</span>';$('scaleLive').textContent=state.filtered===null?'센서값 대기':`현재 보정 전 캔트 ${rawCant().toFixed(2)} mm · 각도 ${state.filtered.toFixed(4)}°`;if(state.scaleStep===2)$('scaleNext').disabled=!state.stable;}}
+function rawCant(){return state.gauge*Math.tan(((state.filtered??0)-(state.zero??0))*Math.PI/180);}
+function setScaleStep(n){state.scaleStep=n;['sc1','sc2','sc3'].forEach((id,i)=>$(id).classList.toggle('done',i<n));const data=[
+ ['기준 블록 설치','20mm 기준 블록을 한쪽 레일과 수평계 사이의 실제 지지점에 설치합니다. 두 레일 접촉점 간 유효거리는 설정값 1,435mm와 일치해야 합니다.'],
+ ['A 방향 측정 취득','블록이 설치된 상태에서 수평계와 스마트폰을 고정하고 안정된 측정값을 취득합니다. 앱은 20mm 기준값과 비교해 스케일 보정계수를 계산합니다.'],
+ ['반대쪽 블록 설치 준비','블록을 제거한 뒤 반대쪽 레일의 대응 지지점으로 옮깁니다. 스마트폰과 수평계의 방향 및 장착은 그대로 유지합니다.']
+][n-1];$('scaleStep').textContent=`SCALE · STEP 0${n}`;$('scaleTitle').textContent=data[0];$('scaleDesc').textContent=data[1];$('scaleNext').textContent=n===3?'좌우 반전 검증으로':'다음 단계';$('scaleNext').disabled=n===2&&!state.stable;$('scaleResult').textContent=n===2?'안정된 값이 되면 측정값 취득을 눌러 보정계수를 계산합니다.':'기준 블록과 지지점 간격을 확인하세요.';updateCalibrationLive();}
+function beginScale(){state.scaleStep=1;setScaleStep(1);show('scaleCalibration');}
+function captureScaleA(){if(!state.stable){toast('센서값이 안정된 후 취득하세요');return;}const c=rawCant();if(!Number.isFinite(c)||Math.abs(c)<1){toast('측정값이 너무 작습니다. 블록 설치와 센서축을 확인하세요');return;}if(c<0){toast('예상 부호와 다릅니다. 블록 위치와 부호 설정을 확인하세요');return;}state.scaleA={rawCant:c,rawAngle:state.filtered};state.scale=20/c;persist();$('scaleResult').textContent=`A 방향 원시 측정 ${c.toFixed(3)}mm · 보정계수 K=${state.scale.toFixed(6)} · 보정 후 기준값 +20.00mm`;toast('스케일 보정계수를 계산했습니다');}
+function setReverseUI(){ $('reverseA').textContent=state.scaleA?'+20.00 mm':'— mm';$('reverseB').textContent='— mm';$('symmetryError').textContent='— mm';$('centerError').textContent='— mm';$('reverseStatus').className='status';$('reverseStatus').innerHTML='<i class="dot"></i><span>반대쪽 측정 대기</span>';$('reverseInstruction').textContent='블록을 반대쪽 지지점으로 옮기고, 스마트폰과 수평계 방향은 그대로 유지한 뒤 안정된 측정값을 취득하세요.';$('reverseResult').textContent='좌우 반전 검증 결과가 여기에 표시됩니다.';$('finishCalibration').disabled=true;}
+function runReverse(){if(!state.stable){toast('센서값이 안정된 후 취득하세요');return;}if(!state.scaleA){toast('먼저 A 방향 스케일 측정을 완료하세요');return;}state.reverseAttempts++;const bRaw=rawCant(),b=bRaw*state.scale;if(bRaw>=0){showReverseFail('반전 후 부호가 바뀌지 않았습니다. 블록 위치와 센서 부호를 확인하세요.');return;}const a=20, symmetry=Math.abs(a-Math.abs(b)),center=Math.abs((a+b)/2),centerAngle=Math.abs((state.scaleA.rawAngle+(state.filtered-state.zero))/2),centerMm=state.gauge*Math.tan(centerAngle*Math.PI/180)*state.scale;
+$('reverseA').textContent='+20.00 mm';$('reverseB').textContent=b.toFixed(2)+' mm';$('symmetryError').textContent=symmetry.toFixed(2)+' mm';$('centerError').textContent=centerMm.toFixed(2)+' mm';
+const pass=symmetry<=SYM_PASS&&centerMm<=SYM_PASS,review=symmetry<=SYM_LIMIT&&centerMm<=SYM_LIMIT;
+if(pass){$('reverseStatus').className='status stable';$('reverseStatus').innerHTML='<i class="dot"></i><span>검증 통과</span>';$('reverseResult').className='callout good';$('reverseResult').textContent=`대칭 오차 ${symmetry.toFixed(2)}mm, 중심 편차 ${centerMm.toFixed(2)}mm. 초기 통과 기준(각각 0.30mm 이하)을 만족했습니다.`;$('finishCalibration').disabled=false;state.calibrated=true;state.calibrationAt=Date.now();persist();}
+else if(review){$('reverseStatus').className='status';$('reverseStatus').innerHTML='<i class="dot"></i><span>재측정 권고</span>';$('reverseResult').className='callout';$('reverseResult').textContent=`오차가 0.30mm를 초과했지만 0.50mm 이내입니다. 블록 접촉과 위치를 확인하고 재측정하세요. (${state.reverseAttempts}/${MAX_RETRIES})`;$('finishCalibration').disabled=true;if(state.reverseAttempts>=MAX_RETRIES)showReverseFail('3회 검증 후에도 통과하지 못했습니다. 캘리브레이션을 중단하고 장비를 점검하세요.');}
+else showReverseFail(`대칭 오차 또는 중심 편차가 0.50mm를 초과했습니다. (${state.reverseAttempts}/${MAX_RETRIES})`);
+}
+function showReverseFail(msg){$('reverseStatus').className='status bad';$('reverseStatus').innerHTML='<i class="dot"></i><span>검증 실패</span>';$('reverseResult').className='callout bad';$('reverseResult').textContent=msg+' 수평계 접촉, 블록 높이·위치, 유효 간격, 스마트폰 고정을 확인하세요.';$('finishCalibration').disabled=true;if(state.reverseAttempts>=MAX_RETRIES){state.calibrated=false;toast('검증 실패 · 측정 기능을 사용할 수 없습니다');}}
+function startZeroCheck(){state.zeroCheckDone=false;$('continueAfterZeroCheck').disabled=true;$('zeroCheckResult').className='callout';$('zeroCheckResult').textContent='기준 수평면에서 안정된 값을 취득한 후 확인 버튼을 누르세요.';show('zeroCheck');}
+function runZeroCheck(){if(!state.stable||state.zero===null){toast('저장된 영점이 있거나 센서가 안정되어야 합니다');return;}const delta=state.filtered-state.zero,deg=Math.abs(delta),mm=state.gauge*Math.tan(deg*Math.PI/180),ok=deg<=ZERO_LIMIT,warn=deg<=ZERO_WARN;
+$('zeroCheckLive').textContent=(delta>=0?'+':'')+delta.toFixed(4)+'°';$('zeroCheckDetail').textContent=`캔트 환산 편차 약 ${mm.toFixed(2)}mm · 정상 기준 ±${ZERO_LIMIT.toFixed(2)}°`;
+if(ok){$('zeroCheckStatus').className='status stable';$('zeroCheckStatus').innerHTML='<i class="dot"></i><span>영점 정상</span>';$('zeroCheckResult').className='callout good';$('zeroCheckResult').textContent='저장된 영점이 초기 허용범위 안에 있습니다. 기존 영점과 스케일 보정값을 유지합니다.';$('continueAfterZeroCheck').disabled=false;state.zeroCheckDone=true;}
+else if(warn){$('zeroCheckStatus').className='status';$('zeroCheckStatus').innerHTML='<i class="dot"></i><span>영점 주의</span>';$('zeroCheckResult').className='callout';$('zeroCheckResult').textContent='정상 범위를 벗어났지만 경고 범위 안입니다. 수평면과 기포 위치를 다시 확인하고 재측정하세요. 영점을 자동 변경하지 않습니다.';$('continueAfterZeroCheck').disabled=true;}
+else{$('zeroCheckStatus').className='status bad';$('zeroCheckStatus').innerHTML='<i class="dot"></i><span>영점 재설정 필요</span>';$('zeroCheckResult').className='callout bad';$('zeroCheckResult').textContent='저장된 영점과 차이가 큽니다. 기준면·기포·장착 상태를 확인한 뒤 전체 캘리브레이션을 수행하세요.';$('continueAfterZeroCheck').disabled=true;}}
+document.querySelectorAll('[data-device]').forEach(b=>b.addEventListener('click',()=>{state.device=b.dataset.device;document.querySelectorAll('[data-device]').forEach(x=>x.classList.toggle('selected',x===b));$('toMode').disabled=false;}));
+$('toMode').onclick=()=>show('mode');$('chooseCal').onclick=()=>{state.mode='cal';show('guide');};
+$('chooseMeasure').onclick=()=>{state.mode='measure';if(!state.calibrated||state.zero===null||state.configId!==configId()){toast('저장된 캘리브레이션이 없거나 설정이 변경되었습니다.');state.mode='cal';show('guide');return;}show('startupCheck');};
+$('knownLevel').onclick=async()=>{if(await startSensor())startZeroCheck();else show('diagnostics');};
+$('noKnownLevel').onclick=()=>{if(!state.calibrated||state.zero===null||state.configId!==configId()){toast('유효한 캘리브레이션이 없습니다.');state.mode='cal';show('guide');return;}toast('영점 확인 미실시 · 저장값 사용');show('guide');};
+$('runZeroCheck').onclick=runZeroCheck;$('redoCalibrationFromCheck').onclick=()=>{state.mode='cal';beginCalibration();};
+$('continueAfterZeroCheck').onclick=()=>{if(state.zeroCheckDone){show('guide');}};
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>show(b.dataset.back));
+$('startWork').onclick=async()=>{if(!await startSensor()){show('diagnostics');return;}if(state.mode==='cal')beginCalibration();else{show('measure');renderRecords();}};
+$('zeroNext').onclick=()=>{if(state.zeroStep===3&&!state.stable){toast('안정된 센서값을 기다려 주세요');return;}if(state.zeroStep<4){setZeroStep(state.zeroStep+1);return;}if(!state.stable){toast('센서값이 안정된 후 저장하세요');return;}state.zero=state.filtered;state.scale=1;state.configId=configId();state.calibrated=false;persist();toast('제로값 저장 완료');beginScale();};
+$('zeroCancel').onclick=()=>{show('mode');};
+$('scaleNext').onclick=()=>{if(state.scaleStep===1){setScaleStep(2);return;}if(state.scaleStep===2){captureScaleA();if(state.scaleA)setScaleStep(3);return;}setReverseUI();show('reverseCheck');};
+$('scaleCancel').onclick=()=>show('mode');
+$('captureReverse').onclick=runReverse;$('retryReverse').onclick=()=>{state.reverseAttempts=0;setReverseUI();};
+$('reverseCancel').onclick=()=>show('mode');
+$('finishCalibration').onclick=()=>{if(!state.calibrated){toast('좌우 반전 검증을 통과해야 합니다');return;}state.configId=configId();persist();toast('캘리브레이션 완료');renderRecords();show('measure');};
+$('save').onclick=saveRecord;$('readout').onclick=saveRecord;
+$('clearRecords').onclick=()=>{if(confirm('최근 측정 기록 10개를 모두 삭제할까요?')){state.records=[];persist();renderRecords();toast('기록을 초기화했습니다');}};
+$('saveSettings').onclick=()=>{const g=Number($('gauge').value);if(!Number.isFinite(g)||g<100||g>2000){toast('유효한 측정 간격을 입력하세요');return;}const old=configId();state.gauge=g;state.filterMs=Number($('filter').value);state.axis=$('axis').value;state.sign=Number($('sign').value);state.sensitivity=Number($('sensitivity').value);state.samples=[];state.stable=false;state.hasStableDisplay=false;if(old!==configId()){state.calibrated=false;state.zero=null;state.scale=1;state.configId=null;toast('측정 기준·축·부호 변경으로 재캘리브레이션이 필요합니다');}else toast('설정을 저장했습니다');persist();show('measure');};
+$('sensitivity').oninput=()=>{$('sensText').textContent=['','엄격','보통','완화'][Number($('sensitivity').value)];};
+$('redoCalibration').onclick=()=>{state.mode='cal';beginCalibration();};
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));
+load();syncSettings();renderRecords();$('deviceView').textContent=state.device||'—';$('apiSupport').textContent=('DeviceMotionEvent'in window)?'API 존재':'미지원';
+if(state.device){document.querySelectorAll('[data-device]').forEach(b=>b.classList.toggle('selected',b.dataset.device===state.device));$('toMode').disabled=false;}
+setInterval(()=>{if(state.screen==='calibration'||state.screen==='scaleCalibration')updateCalibrationLive();},250);
+})();
+</script>
+</body>
+</html>
